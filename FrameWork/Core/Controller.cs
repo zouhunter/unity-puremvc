@@ -4,47 +4,29 @@ using UnityEngine;
 public class Controller : IController
 {
     protected IView m_view;
-    protected IDictionary<NotiConst,Type> m_commandMap;
-    protected static volatile IController m_instance;
+    protected IDictionary<string, Type> m_commandMap;
+
+    public static IController Instance = new Controller();
     protected readonly object m_syncRoot = new object();
-    protected static readonly object m_staticSyncRoot = new object();
-    protected Controller()
+
+    public Controller()
     {
-        m_commandMap = new Dictionary<NotiConst, Type>();
+        m_commandMap = new Dictionary<string, Type>();
         InitializeController();
-    }
-    public static IController Instance
-    {
-        get
-        {
-            if (m_instance == null)
-            {
-                lock (m_staticSyncRoot)
-                {
-                    if (m_instance == null) m_instance = new Controller();
-                }
-            }
-
-            return m_instance;
-        }
-    }
-    static Controller()
-    {
-
     }
     protected virtual void InitializeController()
     {
         m_view = View.Instance;
     }
 
-    public virtual void RegisterCommand(NotiConst noti, Type commandType)
+    public virtual void RegisterCommand(string observerName, Type commandType)
     {
         lock (m_syncRoot)
         {
-            if (!m_commandMap.ContainsKey(noti))
+            if (!m_commandMap.ContainsKey(observerName))
             {
-                m_view.RegisterObserver(noti, new Observer("ExecuteCommand", this));
-                m_commandMap.Add(noti,commandType);
+                m_view.RegisterObserver(observerName, new Observer("ExecuteCommand", this));
+                m_commandMap.Add(observerName, commandType);
             }
         }
     }
@@ -69,22 +51,25 @@ public class Controller : IController
             ((ICommand)commandInstance).Execute(note);
         }
     }
-    public virtual bool HasCommand(NotiConst notificationName)
+    public virtual bool HasCommand(string observerName)
     {
         lock (m_syncRoot)
         {
-            return m_commandMap.ContainsKey(notificationName);
+            return m_commandMap.ContainsKey(observerName);
         }
     }
-    public virtual void RemoveCommand(NotiConst notificationName)
+    public virtual Type RemoveCommand(string notificationName)
     {
         lock (m_syncRoot)
         {
+            Type type = null;
             if (m_commandMap.ContainsKey(notificationName))
             {
+                type = m_commandMap[notificationName];
                 m_view.RemoveObserver(notificationName, this);
                 m_commandMap.Remove(notificationName);
             }
+            return type;
         }
     }
 }

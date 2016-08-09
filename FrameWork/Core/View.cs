@@ -2,37 +2,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-public class View : IView
+public class View :IView
 {
     protected IDictionary<string, IMediator> m_mediatorMap;
-    protected IDictionary<NotiConst, List<IObserver>> m_observerMap;
+    protected IDictionary<string, List<IObserver>> m_observerMap;
 
+    public static IView Instance = new View();
+    protected readonly object m_syncRoot = new object();
     protected View()
     {
         m_mediatorMap = new Dictionary<string, IMediator>();
-        m_observerMap = new Dictionary<NotiConst, List<IObserver>>();
+        m_observerMap = new Dictionary<string, List<IObserver>>();
         InitializeView();
-    }
-    protected static volatile IView m_instance;
-    protected readonly object m_syncRoot = new object();
-    protected static readonly object m_staticSyncRoot = new object();
-    public static IView Instance
-    {
-        get
-        {
-            if (m_instance == null)
-            {
-                lock (m_staticSyncRoot)
-                {
-                    if (m_instance == null)
-                    {
-                        m_instance = new View();
-                    }
-                }
-            }
-
-            return m_instance;
-        }
     }
     protected virtual void InitializeView()
     {
@@ -43,20 +24,20 @@ public class View : IView
     /// </summary>
     /// <param name="obName"></param>
     /// <param name="observer"></param>
-    public void RegisterObserver(NotiConst noti, IObserver observer)
+    public virtual void RegisterObserver(string eventName, IObserver observer)
     {
         lock (m_syncRoot)
         {
-            if (m_observerMap.ContainsKey(noti))
+            if (m_observerMap.ContainsKey(eventName))
             {
-                if (!m_observerMap[noti].Contains(observer))
+                if (!m_observerMap[eventName].Contains(observer))
                 {
-                    m_observerMap[noti].Add(observer);
+                    m_observerMap[eventName].Add(observer);
                 }
             }
             else
             {
-                m_observerMap.Add(noti, new List<IObserver>() { observer });
+                m_observerMap.Add(eventName, new List<IObserver>() { observer });
             }
         }
     }
@@ -64,7 +45,7 @@ public class View : IView
     /// 通知所有观察者
     /// </summary>
     /// <param name="notify"></param>
-    public virtual void NotifyObservers(INotification noti)
+    public virtual void NotifyObservers<T>(INotification<T> noti)
     {
         IList<IObserver> observers = null;
 
@@ -82,22 +63,23 @@ public class View : IView
             for (int i = 0; i < observers.Count; i++)
             {
                 IObserver observer = observers[i];
-                observer.NotifyObserver(noti);
+                observer.NotifyObserver<T>(noti);
             }
         }
     }
+
     /// <summary>
     /// 将指定的观察者移除
     /// </summary>
     /// <param name="name"></param>
-    public virtual void RemoveObserver(NotiConst notificationName, object notifyContext)
+    public virtual void RemoveObserver(string eventName, object notifyContext)
     {
         lock (m_syncRoot)
         {
             // the observer list for the notification under inspection
-            if (m_observerMap.ContainsKey(notificationName))
+            if (m_observerMap.ContainsKey(eventName))
             {
-                IList<IObserver> observers = m_observerMap[notificationName];
+                IList<IObserver> observers = m_observerMap[eventName];
 
                 for (int i = 0; i < observers.Count; i++)
                 {
@@ -110,7 +92,7 @@ public class View : IView
 
                 if (observers.Count == 0)
                 {
-                    m_observerMap.Remove(notificationName);
+                    m_observerMap.Remove(eventName);
                 }
             }
         }
@@ -119,16 +101,18 @@ public class View : IView
     /// 将所有的观察者移除
     /// </summary>
     /// <param name="name"></param>
-    public void RemoveObservers(NotiConst obName)
+    public void RemoveObservers(string eventName)
     {
-        ////Debug.Log("移除 ： " + obName);
-        if (m_observerMap.ContainsKey(obName))
+        lock (m_syncRoot)
         {
-            m_observerMap.Remove(obName);
+            if (m_observerMap.ContainsKey(eventName))
+            {
+                m_observerMap.Remove(eventName);
+            }
         }
     }
     /// <summary>
-    /// 注册中介
+    /// 注册mediator
     /// </summary>
     /// <param name="notify"></param>
     public void RegisterMediator(IMediator mediator)
@@ -141,13 +125,13 @@ public class View : IView
             m_mediatorMap[mediator.MediatorName] = mediator;
 
             // Get Notification interests, if any.
-            IList<NotiConst> interests = mediator.ListNotificationInterests();
+            IList<string> interests = mediator.ListNotificationInterests();
 
             // Register Mediator as an observer for each of its notification interests
             if (interests.Count > 0)
             {
                 // Create Observer
-                IObserver observer = new Observer("HandleNotification",mediator);
+                IObserver observer = new Observer("HandleNotification", mediator);
 
                 // Register Mediator as Observer for its list of Notification interests
                 for (int i = 0; i < interests.Count; i++)
@@ -160,18 +144,11 @@ public class View : IView
         mediator.OnRegister();
     }
     /// <summary>
-    /// 获取中介
+    /// 获取Mediator
     /// </summary>
-    /// <param name="notify"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="Name"></param>
     /// <returns></returns>
-    public IMediator RetrieveMediator(string Name)
-    {
-        lock (m_syncRoot)
-        {
-            if (!m_mediatorMap.ContainsKey(Name)) return null;
-            return m_mediatorMap[Name];
-        }
-    }
     public T RetrieveMediator<T>(string Name) where T : IMediator
     {
         lock (m_syncRoot)
@@ -183,7 +160,7 @@ public class View : IView
         }
     }
     /// <summary>
-    /// 移除中介
+    /// 移除mediator
     /// </summary>
     /// <param name="notify"></param>
     public IMediator RemoveMediator(string mediatorName)
@@ -195,7 +172,7 @@ public class View : IView
             if (!m_mediatorMap.ContainsKey(mediatorName)) return null;
             mediator = (IMediator)m_mediatorMap[mediatorName];
 
-            IList<NotiConst> interests = mediator.ListNotificationInterests();
+            IList<string> interests = mediator.ListNotificationInterests();
 
             for (int i = 0; i < interests.Count; i++)
             {
