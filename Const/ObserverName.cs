@@ -2,5 +2,5 @@
 using System.Collections;
 
 public enum ObserverName:int{
-	cmd,data,sprite
+	green,black,red
 }

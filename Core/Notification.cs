@@ -4,6 +4,7 @@ using System;
 
 public class Notification<T> : INotification<T>
 {
+    public Notification() { }
 	public Notification(ObserverName observerName)
     {
         ObserverName = observerName;
@@ -19,6 +20,7 @@ public class Notification<T> : INotification<T>
         Type = type;
         Body = body;
     }
+
     public T Body { get; set; }
     public Type Type { get; set; }
 	public ObserverName ObserverName { get; set; }
@@ -33,5 +35,5 @@ public class Notification<T> : INotification<T>
             return msg;
         }
     }
-
+    public bool isUsing { get; set; }
 }

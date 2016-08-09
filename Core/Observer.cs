@@ -25,7 +25,13 @@ public class Observer : IObserver
         Type t = context.GetType();
         BindingFlags f = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
         MethodInfo mi = t.GetMethod(method, f);
-        mi.Invoke(context, new object[] { notification });
+        try {
+            mi.Invoke(context, new object[] { notification });
+        }
+        catch
+        {
+            Debug.LogError("使用" + notification + "的Mediator格式不对");
+        }
     }
     public virtual bool CompareNotifyContext(object obj)
     {

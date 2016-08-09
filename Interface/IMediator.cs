@@ -7,6 +7,10 @@ public interface IMediator
     void OnRegister();
     void OnRemove();
 }
+public interface ISimpleMediator: IMediator
+{
+    void HandleNotification(INotification notify);
+}
 public interface IMediator<T>:IMediator
 {
     void HandleNotification(INotification<T> notify);
