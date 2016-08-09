@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System;
-public class Notifier : MonoBehaviour,INotifier
+public class Notifier : INotifier
 {
     public virtual void SendNotification(NotiConst notificationName)
     {

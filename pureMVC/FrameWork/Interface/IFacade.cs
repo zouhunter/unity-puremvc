@@ -11,6 +11,6 @@ public interface IFacade : INotifier {
     T RetrieveMediator<T>(string name) where T : IMediator;
     void RemoveMediator(string name);
 
-    void RegisterCommand(NotiConst noti,ICommand cmd);
+    void RegisterCommand(NotiConst noti,Type cmd);
     void RemoveCommand(NotiConst noti);
 }

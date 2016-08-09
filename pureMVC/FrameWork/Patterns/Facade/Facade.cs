@@ -91,9 +91,9 @@ public class Facade : IFacade, INotifier
         m_view.RemoveMediator(name);
     }
 
-    public void RegisterCommand(NotiConst name,ICommand cmd)
+    public void RegisterCommand(NotiConst name,Type cmd)
     {
-        m_controller.RegisterCommand(name,cmd.GetType());
+        m_controller.RegisterCommand(name,cmd);
     }
 
     public void RemoveCommand(NotiConst noti)

@@ -6,7 +6,6 @@ public class View : MonoBehaviour, IView
 {
     protected IDictionary<string, IMediator> m_mediatorMap;
     protected IDictionary<NotiConst, List<IObserver>> m_observerMap;
-    private Queue<INotification> waitToNoti = new Queue<INotification>();
 
     protected View()
     {
@@ -42,35 +41,6 @@ public class View : MonoBehaviour, IView
 
     }
     /// <summary>
-    /// 等待事件接收
-    /// </summary>
-    void Update()
-    {
-        if (waitToNoti.Count > 0)
-        {
-            INotification noti = waitToNoti.Dequeue();
-            IList<IObserver> observers = null;
-
-            lock (m_syncRoot)
-            {
-                if (m_observerMap.ContainsKey(noti.ObserverName))
-                {
-                    IList<IObserver> observers_ref = m_observerMap[noti.ObserverName];
-                    observers = new List<IObserver>(observers_ref);
-                }
-            }
-
-            if (observers != null)
-            {
-                for (int i = 0; i < observers.Count; i++)
-                {
-                    IObserver observer = observers[i];
-                    observer.NotifyObserver(noti);
-                }
-            }
-        }
-    }
-    /// <summary>
     /// 注册成为观察者
     /// </summary>
     /// <param name="obName"></param>
@@ -98,7 +68,25 @@ public class View : MonoBehaviour, IView
     /// <param name="notify"></param>
     public virtual void NotifyObservers(INotification noti)
     {
-        waitToNoti.Enqueue(noti);
+        IList<IObserver> observers = null;
+
+        lock (m_syncRoot)
+        {
+            if (m_observerMap.ContainsKey(noti.ObserverName))
+            {
+                IList<IObserver> observers_ref = m_observerMap[noti.ObserverName];
+                observers = new List<IObserver>(observers_ref);
+            }
+        }
+
+        if (observers != null)
+        {
+            for (int i = 0; i < observers.Count; i++)
+            {
+                IObserver observer = observers[i];
+                observer.NotifyObserver(noti);
+            }
+        }
     }
     /// <summary>
     /// 将指定的观察者移除
