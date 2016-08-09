@@ -13,6 +13,6 @@ public interface IFacade:INotifier
     T RetrieveMediator<T>(string name) where T : IMediator;
     void RemoveMediator(string name);
 
-    void RegisterCommand(string noti, Type cmd);
-    Type RemoveCommand(string noti);
+	void RegisterCommand<T>(ObserverName noti)where T:ICommand,new ();
+	ICommand RemoveCommand(ObserverName noti);
 }

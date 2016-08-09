@@ -1,9 +1,9 @@
 ﻿using System;
 
 public interface IView {
-	void RegisterObserver(string observerName, IObserver observer);
+	void RegisterObserver(ObserverName observerName, IObserver observer);
 	void NotifyObservers<T>(INotification<T> noti);
-	void RemoveObserver(string observerName, object notifyContext);
+	void RemoveObserver(ObserverName observerName, object notifyContext);
 
 	void RegisterMediator(IMediator mediator);
 	T RetrieveMediator<T>(string mediatorName) where T :IMediator;

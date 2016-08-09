@@ -3,7 +3,7 @@ using System.Collections.Generic;
 public interface IMediator
 {
     string MediatorName { get; }
-    IList<string> ListNotificationInterests();
+	IList<ObserverName> ListNotificationInterests();
     void OnRegister();
     void OnRemove();
 }

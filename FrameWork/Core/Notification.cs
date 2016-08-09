@@ -4,16 +4,16 @@ using System;
 
 public class Notification<T> : INotification<T>
 {
-    public Notification(string observerName)
+	public Notification(ObserverName observerName)
     {
         ObserverName = observerName;
     }
-    public Notification(string observerName, T body)
+	public Notification(ObserverName observerName, T body)
     {
         this.ObserverName = observerName;
         this.Body = body;
     }
-    public Notification(string observerName, T body, Type type)
+	public Notification(ObserverName observerName, T body, Type type)
     {
         ObserverName = observerName;
         Type = type;
@@ -21,7 +21,7 @@ public class Notification<T> : INotification<T>
     }
     public T Body { get; set; }
     public Type Type { get; set; }
-    public string ObserverName { get; set; }
+	public ObserverName ObserverName { get; set; }
     public new string ToString
     {
         get

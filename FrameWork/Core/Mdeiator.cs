@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 using System.Collections.Generic;
-public class Mediator<T> : MonoBehaviour, IMediator<T>
+public abstract class Mediator<T> : MonoBehaviour, IMediator<T>
 {
     public virtual void OnEnable()
     {
@@ -14,11 +14,9 @@ public class Mediator<T> : MonoBehaviour, IMediator<T>
         m_view.RemoveMediator(name);
     }
 
-    public virtual IList<string> ListNotificationInterests()
-    {
-        return new List<string>();
-    }
-    public virtual void HandleNotification(INotification<T> notification) { }
+	public abstract IList<ObserverName> ListNotificationInterests ();
+	public abstract void HandleNotification (INotification<T> notification);
+
     public virtual void OnRegister() { }
     public virtual void OnRemove() { }
     public virtual string MediatorName

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 public class Controller : IController
 {
     protected IView m_view;
-    protected IDictionary<string, Type> m_commandMap;
+	protected IDictionary<ObserverName, ICommand> m_commandMap;
 
-    public static IController Instance = new Controller();
-    protected readonly object m_syncRoot = new object();
-
+	protected readonly object m_syncRoot = new object();
+	protected readonly static object m_StaticSyncRoot = new object();
+	public static IController Instance = new Controller();
     public Controller()
     {
-        m_commandMap = new Dictionary<string, Type>();
+		m_commandMap = new Dictionary<ObserverName, ICommand>();
         InitializeController();
     }
     protected virtual void InitializeController()
@@ -19,50 +20,29 @@ public class Controller : IController
         m_view = View.Instance;
     }
 
-    public virtual void RegisterCommand(string observerName, Type commandType)
+	public void RegisterCommand(ObserverName observerName, ICommand command)
     {
         lock (m_syncRoot)
         {
             if (!m_commandMap.ContainsKey(observerName))
             {
-                m_view.RegisterObserver(observerName, new Observer("ExecuteCommand", this));
-                m_commandMap.Add(observerName, commandType);
+				m_view.RegisterObserver(observerName, new Observer("Execute", command));
+                m_commandMap.Add(observerName, command);
             }
         }
     }
-    /// <summary>
-    /// 执行Command
-    /// </summary>
-    /// <param name="note"></param>
-    public virtual void ExecuteCommand(INotification note)
-    {
-        Type commandType = null;
-
-        lock (m_syncRoot)
-        {
-            if (!m_commandMap.ContainsKey(note.ObserverName)) return;
-            commandType = m_commandMap[note.ObserverName];
-        }
-
-        object commandInstance = Activator.CreateInstance(commandType);
-
-        if (commandInstance is ICommand)
-        {
-            ((ICommand)commandInstance).Execute(note);
-        }
-    }
-    public virtual bool HasCommand(string observerName)
+	public bool HasCommand(ObserverName observerName)
     {
         lock (m_syncRoot)
         {
             return m_commandMap.ContainsKey(observerName);
         }
     }
-    public virtual Type RemoveCommand(string notificationName)
+	public ICommand RemoveCommand(ObserverName notificationName)
     {
         lock (m_syncRoot)
         {
-            Type type = null;
+			ICommand type = null;
             if (m_commandMap.ContainsKey(notificationName))
             {
                 type = m_commandMap[notificationName];

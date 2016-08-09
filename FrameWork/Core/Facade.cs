@@ -8,7 +8,7 @@ public class Facade :Notifyer, IFacade
     protected IView m_view;
     protected IController m_controller;
 
-    public static IFacade Instance = new Facade();
+	public static volatile IFacade Instance = new Facade();
     protected readonly object m_syncRoot = new object();
     public Facade()
     {
@@ -75,12 +75,13 @@ public class Facade :Notifyer, IFacade
         m_view.RemoveMediator(name);
     }
 
-    public void RegisterCommand(string observerName, Type cmd)
+	public void RegisterCommand<T>(ObserverName observerName) where T:ICommand,new()
     {
+		T cmd = new T ();
         m_controller.RegisterCommand(observerName, cmd);
     }
 
-    public Type RemoveCommand(string observerName)
+	public ICommand RemoveCommand(ObserverName observerName)
     {
         return m_controller.RemoveCommand(observerName);
     }

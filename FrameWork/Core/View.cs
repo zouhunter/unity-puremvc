@@ -5,14 +5,14 @@ using System.Collections.Generic;
 public class View :IView
 {
     protected IDictionary<string, IMediator> m_mediatorMap;
-    protected IDictionary<string, List<IObserver>> m_observerMap;
+	protected IDictionary<ObserverName, List<IObserver>> m_observerMap;
 
-    public static IView Instance = new View();
+	public static volatile IView Instance = new View();
     protected readonly object m_syncRoot = new object();
     protected View()
     {
         m_mediatorMap = new Dictionary<string, IMediator>();
-        m_observerMap = new Dictionary<string, List<IObserver>>();
+		m_observerMap = new Dictionary<ObserverName, List<IObserver>>();
         InitializeView();
     }
     protected virtual void InitializeView()
@@ -24,7 +24,7 @@ public class View :IView
     /// </summary>
     /// <param name="obName"></param>
     /// <param name="observer"></param>
-    public virtual void RegisterObserver(string eventName, IObserver observer)
+	public void RegisterObserver(ObserverName eventName, IObserver observer)
     {
         lock (m_syncRoot)
         {
@@ -45,7 +45,7 @@ public class View :IView
     /// 通知所有观察者
     /// </summary>
     /// <param name="notify"></param>
-    public virtual void NotifyObservers<T>(INotification<T> noti)
+    public void NotifyObservers<T>(INotification<T> noti)
     {
         IList<IObserver> observers = null;
 
@@ -72,7 +72,7 @@ public class View :IView
     /// 将指定的观察者移除
     /// </summary>
     /// <param name="name"></param>
-    public virtual void RemoveObserver(string eventName, object notifyContext)
+	public void RemoveObserver(ObserverName eventName, object notifyContext)
     {
         lock (m_syncRoot)
         {
@@ -101,7 +101,7 @@ public class View :IView
     /// 将所有的观察者移除
     /// </summary>
     /// <param name="name"></param>
-    public void RemoveObservers(string eventName)
+	public void RemoveObservers(ObserverName eventName)
     {
         lock (m_syncRoot)
         {
@@ -125,7 +125,7 @@ public class View :IView
             m_mediatorMap[mediator.MediatorName] = mediator;
 
             // Get Notification interests, if any.
-            IList<string> interests = mediator.ListNotificationInterests();
+			IList<ObserverName> interests = mediator.ListNotificationInterests();
 
             // Register Mediator as an observer for each of its notification interests
             if (interests.Count > 0)
@@ -172,7 +172,7 @@ public class View :IView
             if (!m_mediatorMap.ContainsKey(mediatorName)) return null;
             mediator = (IMediator)m_mediatorMap[mediatorName];
 
-            IList<string> interests = mediator.ListNotificationInterests();
+			IList<ObserverName> interests = mediator.ListNotificationInterests();
 
             for (int i = 0; i < interests.Count; i++)
             {
@@ -190,7 +190,7 @@ public class View :IView
     /// </summary>
     /// <param name="mediatorName"></param>
     /// <returns></returns>
-    public virtual bool HasMediator(string mediatorName)
+    public bool HasMediator(string mediatorName)
     {
         lock (m_syncRoot)
         {

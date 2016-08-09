@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 public class Model : IModel
 {
-    public static IModel Instance = new Model();
+	public static volatile IModel Instance = new Model();
     protected readonly object m_syncRoot = new object();
 
     protected IDictionary<string, IProxy> m_proxyMap;
@@ -19,7 +19,7 @@ public class Model : IModel
 		
 	}
 
-	public virtual void RegisterProxy(IProxy proxy)
+	public void RegisterProxy(IProxy proxy)
 	{
 		lock (m_syncRoot)
 		{
@@ -28,7 +28,7 @@ public class Model : IModel
 
 		proxy.OnRegister();
 	}
-	public virtual T RetrieveProxy<T>(string proxyName)
+	public T RetrieveProxy<T>(string proxyName)
 	{
 		lock (m_syncRoot)
 		{
@@ -36,14 +36,14 @@ public class Model : IModel
             return (T)m_proxyMap[proxyName];
 		}
 	}
-	public virtual bool HasProxy(string proxyName)
+	public bool HasProxy(string proxyName)
 	{
 		lock (m_syncRoot)
 		{
 			return m_proxyMap.ContainsKey(proxyName);
 		}
 	}
-	public virtual IProxy RemoveProxy(string proxyName)
+	public IProxy RemoveProxy(string proxyName)
 	{
 		IProxy proxy = null;
 

@@ -2,7 +2,7 @@
 
 public interface INotification
 {
-    string ObserverName { get; set; }
+	ObserverName ObserverName { get; set; }
     Type Type { get; set; }
     string ToString { get; }
 }
