@@ -66,6 +66,10 @@ public class Facade : IFacade, INotifier
     {
        return m_model.RetrieveProxy(name);
     }
+    public T RetrieveProxy<T>(string name) where T :IProxy
+    {
+        return m_model.RetrieveProxy<T>(name);
+    }
 
     public void RemoveProxy(string name)
     {

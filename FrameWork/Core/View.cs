@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-public class View : MonoBehaviour, IView
+public class View : IView
 {
     protected IDictionary<string, IMediator> m_mediatorMap;
     protected IDictionary<NotiConst, List<IObserver>> m_observerMap;
@@ -26,9 +26,7 @@ public class View : MonoBehaviour, IView
                 {
                     if (m_instance == null)
                     {
-                        GameObject go = new GameObject("AppView");
-                        go.transform.SetParent(GameManager.Instance.transform);
-                        m_instance = go.AddComponent<View>();
+                        m_instance = new View();
                     }
                 }
             }
@@ -123,7 +121,7 @@ public class View : MonoBehaviour, IView
     /// <param name="name"></param>
     public void RemoveObservers(NotiConst obName)
     {
-        //Debug.Log("移除 ： " + obName);
+        ////Debug.Log("移除 ： " + obName);
         if (m_observerMap.ContainsKey(obName))
         {
             m_observerMap.Remove(obName);

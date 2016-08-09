@@ -1,7 +1,8 @@
 ﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
-public class MacroCommand : Notifier, ICommand
+public abstract class MacroCommand : Notifier, ICommand
 {
     public MacroCommand()
     {
@@ -24,9 +25,7 @@ public class MacroCommand : Notifier, ICommand
         }
     }
 
-    protected virtual void InitializeMacroCommand()
-    {
-    }
+    protected abstract void InitializeMacroCommand();
     protected void AddSubCommand(Type commandType)
     {
         m_subCommands.Add(commandType);

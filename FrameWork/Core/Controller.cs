@@ -43,7 +43,6 @@ public class Controller : IController
         {
             if (!m_commandMap.ContainsKey(noti))
             {
-                ICommand cmd = (ICommand)Activator.CreateInstance(commandType);
                 m_view.RegisterObserver(noti, new Observer("ExecuteCommand", this));
                 m_commandMap.Add(noti,commandType);
             }

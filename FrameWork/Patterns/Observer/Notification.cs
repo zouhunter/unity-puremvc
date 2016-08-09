@@ -22,7 +22,7 @@ public class Notification : INotification
     public object Body { get; set; }
     public Type Type { get; set; }
     public NotiConst ObserverName { get; set; }
-    public string ToString
+    public new string ToString
     {
         get
         {

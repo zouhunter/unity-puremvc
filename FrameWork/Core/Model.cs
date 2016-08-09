@@ -53,6 +53,14 @@ public class Model : IModel
             return m_proxyMap[proxyName];
         }
     }
+    public virtual T RetrieveProxy<T>(string proxyName) where T : IProxy
+    {
+        lock (m_syncRoot)
+        {
+            if (!m_proxyMap.ContainsKey(proxyName)) return default(T);
+            return (T)m_proxyMap[proxyName];
+        }
+    }
     public virtual bool HasProxy(string proxyName)
     {
         lock (m_syncRoot)
