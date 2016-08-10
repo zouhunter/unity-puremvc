@@ -35,7 +35,7 @@ namespace PureMVC
             }
             catch
             {
-                Debug.LogError("使用" + notification + "的Mediator格式不对");
+                Debug.LogWarning("使用" + notification + "的Mediator格式不对");
             }
         }
         public virtual bool CompareNotifyContext(object obj)

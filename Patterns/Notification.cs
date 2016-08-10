@@ -7,7 +7,7 @@ using PureMVC.Core;
 
 namespace PureMVC
 {
-    public class Notification<T> : INotification<T>
+    public class Notification<T> :INotification<T>
     {
         public Notification() { }
         public Notification(string observerName)

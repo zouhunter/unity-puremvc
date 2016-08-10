@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.ootii.Collections
+namespace PureMVC
 {
 	/// <summary>
 	/// Represents a pool of objects that we can pull from in order
