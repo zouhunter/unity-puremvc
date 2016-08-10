@@ -1,5 +1,8 @@
-﻿public interface ICommand<T>:ICommand
+﻿namespace PureMVC.Interfaces
 {
-    void Execute(INotification<T> notify);
+    public interface ICommand { }
+    public interface ICommand<T> : ICommand
+    {
+        void Execute(INotification<T> notify);
+    }
 }
-public interface ICommand{}

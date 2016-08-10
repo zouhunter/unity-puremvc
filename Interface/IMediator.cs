@@ -1,17 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-public interface IMediator
+
+namespace PureMVC.Interfaces
 {
-    string MediatorName { get; }
-	string[] ListNotificationInterests();
-    void OnRegister();
-    void OnRemove();
-}
-public interface ISimpleMediator: IMediator
-{
-    void HandleNotification(INotification notify);
-}
-public interface IMediator<T>:IMediator
-{
-    void HandleNotification(INotification<T> notify);
+    public interface IMediatorIner
+    {
+        string MediatorName { get; }
+        string[] ListNotificationInterests();
+        void OnRegister();
+        void OnRemove();
+    }
+
+    public interface IMediator : IMediatorIner
+    {
+        void HandleNotification(INotification notify);
+    }
+    public interface IMediator<T> : IMediatorIner
+    {
+        void HandleNotification(INotification<T> notify);
+    }
+    public interface IMediator<T,S> : IMediatorIner
+    {
+        void HandleNotification(INotification<T> notify);
+        S Component { get; }
+    }
 }
