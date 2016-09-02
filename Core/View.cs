@@ -197,5 +197,17 @@ public class View :IView
             return m_mediatorMap.ContainsKey(mediatorName);
         }
     }
+    /// <summary>
+    /// 是否含有观察者
+    /// </summary>
+    /// <param name="observerName"></param>
+    /// <returns></returns>
+    public bool HasObserver(string observerName)
+    {
+        lock(m_syncRoot)
+        {
+            return m_observerMap.ContainsKey(observerName);
+        }
+    }
 
 }

@@ -84,6 +84,10 @@ public class EventHolder : IEventHolder
             m_needHandle.Remove(key);
         }
     }
+    public bool HaveEvent(string key)
+    {
+        return m_needHandle.ContainsKey(key);
+    }
     #endregion
 
     #region 触发事件
@@ -99,7 +103,14 @@ public class EventHolder : IEventHolder
             {
                 var data = body.GetValue(rMessage, null);
 
-                m_needHandle[rMessage.ObserverName].DynamicInvoke(data);
+                if (data != null)
+                {
+                    m_needHandle[rMessage.ObserverName].DynamicInvoke(data);
+                }
+                else
+                {
+                    m_needHandle[rMessage.ObserverName].DynamicInvoke();
+                }
             }
             else
             {

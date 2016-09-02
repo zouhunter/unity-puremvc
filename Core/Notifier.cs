@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Threading;
 public class Notifyer : INotifier
 {
     private IView m_view;
@@ -17,8 +18,12 @@ public class Notifyer : INotifier
     /// <param name="notification"></param>
 	private void NotifyObservers<T>(INotification<T> notification)
     {
-        m_view.NotifyObservers<T>(notification);
-        m_eventHolder.NotifyObserver<T>(notification);
+        if (m_view.HasObserver(notification.ObserverName)){
+            m_view.NotifyObservers<T>(notification);
+        }
+        if (m_eventHolder.HaveEvent(notification.ObserverName)){
+            m_eventHolder.NotifyObserver<T>(notification);
+        }
     }
     public void SendNotification(string observeName)
     {

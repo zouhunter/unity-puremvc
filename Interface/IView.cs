@@ -10,4 +10,5 @@ public interface IView {
 	IMediator RemoveMediator(string mediatorName);
 
 	bool HasMediator(string mediatorName);
+    bool HasObserver(string observerName);
 }
