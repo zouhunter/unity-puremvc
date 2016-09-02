@@ -28,7 +28,7 @@ public class Model : IModel
 
 		proxy.OnRegister();
 	}
-	public T RetrieveProxy<T>(string proxyName)
+	public T RetrieveProxy<T>(string proxyName) 
 	{
 		lock (m_syncRoot)
 		{

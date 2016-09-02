@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.Events;
 
 public class Facade :Notifyer, IFacade
 {
     protected IModel m_model;
     protected IView m_view;
     protected IController m_controller;
-
+    protected IEventHolder m_EventHolder;
 	public static volatile IFacade Instance = new Facade();
     protected readonly object m_syncRoot = new object();
     public Facade()
@@ -19,6 +20,7 @@ public class Facade :Notifyer, IFacade
         InitializeModel();
         InitializeController();
         InitializeView();
+        InitializeEventHolder();
     }
     protected virtual void InitializeController()
     {
@@ -34,6 +36,11 @@ public class Facade :Notifyer, IFacade
     {
         if (m_view != null) return;
         m_view = View.Instance;
+    }
+    protected virtual void InitializeEventHolder()
+    {
+        if (m_EventHolder != null) return;
+        m_EventHolder = EventHolder.Instance;
     }
 
     #region 访问三大层的
@@ -84,5 +91,36 @@ public class Facade :Notifyer, IFacade
     {
         m_controller.RemoveCommand(observerName);
     }
+
+
+
+    #endregion
+
+    #region 访问事件系统
+    public void RegisterEvent(string noti, UnityAction even)
+    {
+        m_EventHolder.AddDelegate(noti, even);
+    }
+
+    public void RegisterEvent<T>(string noti, UnityAction<T> even)
+    {
+        m_EventHolder.AddDelegate(noti, even);
+    }
+    
+    public void RemoveEvent(string noti, UnityAction even)
+    {
+        m_EventHolder.RemoveDelegate(noti, even);
+    }
+
+    public void RemoveEvent<T>(string noti, UnityAction<T> even)
+    {
+        m_EventHolder.RemoveDelegate(noti, even);
+    }
+
+    public void RemoveEvents(string noti)
+    {
+        m_EventHolder.RemoveDelegates(noti);
+    }
+
     #endregion
 }
