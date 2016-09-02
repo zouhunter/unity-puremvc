@@ -1,59 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Reflection;
-using PureMVC.Interfaces;
-
-namespace PureMVC.Core
+using UnityEngine;
+public class Controller : IController
 {
-    public class Controller : IController
+    protected IView m_view;
+    protected IDictionary<string, Type> m_commandMap;
+    protected static volatile IController m_instance;
+    protected readonly object m_syncRoot = new object();
+    protected static readonly object m_staticSyncRoot = new object();
+    protected Controller()
     {
-        protected IView m_view;
-        protected IDictionary<string, ICommand> m_commandMap;
-
-        protected readonly object m_syncRoot = new object();
-        protected readonly static object m_StaticSyncRoot = new object();
-        public static IController Instance = new Controller();
-        public Controller()
+        m_commandMap = new Dictionary<string, Type>();
+        InitializeController();
+    }
+    public static IController Instance
+    {
+        get
         {
-            m_commandMap = new Dictionary<string, ICommand>();
-            InitializeController();
-        }
-        protected virtual void InitializeController()
-        {
-            m_view = View.Instance;
-        }
-
-        public void RegisterCommand(string observerName, ICommand command)
-        {
-            lock (m_syncRoot)
+            if (m_instance == null)
             {
-                if (!m_commandMap.ContainsKey(observerName))
+                lock (m_staticSyncRoot)
                 {
-                    m_view.RegisterObserver(observerName, new Observer("Execute", command));
-                    m_commandMap.Add(observerName, command);
+                    if (m_instance == null) m_instance = new Controller();
                 }
             }
+
+            return m_instance;
         }
-        public bool HasCommand(string observerName)
+    }
+    static Controller()
+    {
+
+    }
+    protected virtual void InitializeController()
+    {
+        m_view = View.Instance;
+    }
+
+    public virtual void RegisterCommand(string noti, Type commandType)
+    {
+        lock (m_syncRoot)
         {
-            lock (m_syncRoot)
+            if (!m_commandMap.ContainsKey(noti))
             {
-                return m_commandMap.ContainsKey(observerName);
+                m_view.RegisterObserver(noti, new Observer("ExecuteCommand", this));
+                m_commandMap.Add(noti, commandType);
             }
         }
-        public ICommand RemoveCommand(string notificationName)
+    }
+    /// <summary>
+    /// 执行Command
+    /// </summary>
+    /// <param name="note"></param>
+    public virtual void ExecuteCommand(INotification note)
+    {
+        Type commandType = null;
+
+        lock (m_syncRoot)
         {
-            lock (m_syncRoot)
+            if (!m_commandMap.ContainsKey(note.ObserverName)) return;
+            commandType = m_commandMap[note.ObserverName];
+        }
+
+        object commandInstance = Activator.CreateInstance(commandType);
+
+        Type t = commandInstance.GetType();
+        BindingFlags f = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
+        MethodInfo mi = t.GetMethod("Execute", f);
+        try
+        {
+            mi.Invoke(commandInstance, new object[] { note });
+        }
+        catch
+        {
+            Debug.LogWarningFormat("使用{0}的Mediator格式不对或者观察者名字重复", note.ObserverName);
+        }
+    }
+    public virtual bool HasCommand(string notificationName)
+    {
+        lock (m_syncRoot)
+        {
+            return m_commandMap.ContainsKey(notificationName);
+        }
+    }
+    public virtual void RemoveCommand(string notificationName)
+    {
+        lock (m_syncRoot)
+        {
+            if (m_commandMap.ContainsKey(notificationName))
             {
-                ICommand type = null;
-                if (m_commandMap.ContainsKey(notificationName))
-                {
-                    type = m_commandMap[notificationName];
-                    m_view.RemoveObserver(notificationName, this);
-                    m_commandMap.Remove(notificationName);
-                }
-                return type;
+                m_view.RemoveObserver(notificationName, this);
+                m_commandMap.Remove(notificationName);
             }
         }
     }
