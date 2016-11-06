@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 public interface IMediator
 {
-    string MediatorName { get; }
-	string[] ListNotificationInterests();
-    void OnRegister();
-    void OnRemove();
+    IList<string> ListNotificationInterests();
 }
 public interface ISimpleMediator: IMediator
 {

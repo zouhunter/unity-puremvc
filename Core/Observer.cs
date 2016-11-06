@@ -28,9 +28,9 @@ public class Observer : IObserver
         try {
             mi.Invoke(context, new object[] { notification });
         }
-        catch
+        catch(UnityException e)
         {
-            Debug.LogWarningFormat("使用{0}的Mediator格式不对或者观察者名字重复", notification.ObserverName);
+            Debug.LogWarningFormat(e + notification.ObserverName);
         }
     }
     public virtual bool CompareNotifyContext(object obj)

@@ -72,9 +72,9 @@ public class Controller : IController
         {
             mi.Invoke(commandInstance, new object[] { note });
         }
-        catch
+        catch(UnityException e)
         {
-            Debug.LogWarningFormat("使用{0}的Mediator格式不对或者观察者名字重复", note.ObserverName);
+            Debug.LogWarningFormat("使用{0}的Mediator格式不对或者观察者名字重复:{1}", note.ObserverName,e);
         }
     }
     public virtual bool HasCommand(string notificationName)

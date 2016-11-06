@@ -2,13 +2,11 @@
 using System.Collections;
 using System;
 using UnityEngine.Events;
-
 public class Facade :Notifyer, IFacade
 {
     protected IModel m_model;
     protected IView m_view;
     protected IController m_controller;
-    protected IEventHolder m_EventHolder;
 	public static volatile IFacade Instance = new Facade();
     protected readonly object m_syncRoot = new object();
     public Facade()
@@ -20,7 +18,6 @@ public class Facade :Notifyer, IFacade
         InitializeModel();
         InitializeController();
         InitializeView();
-        InitializeEventHolder();
     }
     protected virtual void InitializeController()
     {
@@ -37,11 +34,6 @@ public class Facade :Notifyer, IFacade
         if (m_view != null) return;
         m_view = View.Instance;
     }
-    protected virtual void InitializeEventHolder()
-    {
-        if (m_EventHolder != null) return;
-        m_EventHolder = EventHolder.Instance;
-    }
 
     #region 访问三大层的
     public void RegisterProxy(IProxy prox)
@@ -49,13 +41,9 @@ public class Facade :Notifyer, IFacade
         m_model.RegisterProxy(prox);
     }
 
-    public IProxy RetrieveProxy(string name)
+    public void RetrieveProxy<T>(string name,UnityAction<T> onRetrived) where T : IProxy
     {
-        return m_model.RetrieveProxy<IProxy>(name);
-    }
-    public T RetrieveProxy<T>(string name) where T : IProxy
-    {
-        return m_model.RetrieveProxy<T>(name);
+        m_model.RetrieveProxy<T>(name, onRetrived);
     }
 
     public IProxy RemoveProxy(string name)
@@ -66,20 +54,6 @@ public class Facade :Notifyer, IFacade
     public void RegisterMediator(IMediator mediator)
     {
         m_view.RegisterMediator(mediator);
-    }
-    public IMediator RetrieveMediator(string name)
-    {
-        return m_view.RetrieveMediator<IMediator>(name);
-    }
-
-    public T RetrieveMediator<T>(string name) where T : IMediator
-    {
-        return m_view.RetrieveMediator<T>(name);
-    }
-
-    public void RemoveMediator(string name)
-    {
-        m_view.RemoveMediator(name);
     }
 
 	public void RegisterCommand<T>(string observerName) where T:ICommand,new()
@@ -92,35 +66,14 @@ public class Facade :Notifyer, IFacade
         m_controller.RemoveCommand(observerName);
     }
 
-
-
-    #endregion
-
-    #region 访问事件系统
-    public void RegisterEvent(string noti, UnityAction even)
+    public void CansaleRetrieve(string name)
     {
-        m_EventHolder.AddDelegate(noti, even);
+        m_model.CansaleRetrieve(name);
     }
 
-    public void RegisterEvent<T>(string noti, UnityAction<T> even)
+    public void RemoveMediator(IMediator name)
     {
-        m_EventHolder.AddDelegate(noti, even);
+        m_view.RemoveMediator(name);
     }
-    
-    public void RemoveEvent(string noti, UnityAction even)
-    {
-        m_EventHolder.RemoveDelegate(noti, even);
-    }
-
-    public void RemoveEvent<T>(string noti, UnityAction<T> even)
-    {
-        m_EventHolder.RemoveDelegate(noti, even);
-    }
-
-    public void RemoveEvents(string noti)
-    {
-        m_EventHolder.RemoveDelegates(noti);
-    }
-
     #endregion
 }

@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine.Events;
 using System.Collections.Generic;
 public class View :IView
 {
-    protected IDictionary<string, IMediator> m_mediatorMap;
+    protected IList<IMediator> m_mediatorMap;
 	protected IDictionary<string, List<IObserver>> m_observerMap;
 
 	public static volatile IView Instance = new View();
     protected readonly object m_syncRoot = new object();
+
     protected View()
     {
-        m_mediatorMap = new Dictionary<string, IMediator>();
+        m_mediatorMap = new List<IMediator>();
 		m_observerMap = new Dictionary<string, List<IObserver>>();
         InitializeView();
     }
@@ -119,14 +121,13 @@ public class View :IView
     {
         lock (m_syncRoot)
         {
-            if (m_mediatorMap.ContainsKey(mediator.MediatorName)) return;
+            if (m_mediatorMap.Contains(mediator)) return;
 
             // Register the Mediator for retrieval by name
-            m_mediatorMap[mediator.MediatorName] = mediator;
+            m_mediatorMap.Add(mediator);
 
             // Get Notification interests, if any.
 			IList<string> interests = mediator.ListNotificationInterests();
-
             // Register Mediator as an observer for each of its notification interests
             if (interests.Count > 0)
             {
@@ -140,63 +141,8 @@ public class View :IView
                 }
             }
         }
-        // alert the mediator that it has been registered
-        mediator.OnRegister();
     }
-    /// <summary>
-    /// 获取Mediator
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="Name"></param>
-    /// <returns></returns>
-    public T RetrieveMediator<T>(string Name) where T : IMediator
-    {
-        lock (m_syncRoot)
-        {
-            if (!m_mediatorMap.ContainsKey(Name)) return default(T);
-            IMediator manager = null;
-            m_mediatorMap.TryGetValue(Name, out manager);
-            return (T)manager;
-        }
-    }
-    /// <summary>
-    /// 移除mediator
-    /// </summary>
-    /// <param name="notify"></param>
-    public IMediator RemoveMediator(string mediatorName)
-    {
-        IMediator mediator = null;
 
-        lock (m_syncRoot)
-        {
-            if (!m_mediatorMap.ContainsKey(mediatorName)) return null;
-            mediator = (IMediator)m_mediatorMap[mediatorName];
-
-			IList<string> interests = mediator.ListNotificationInterests();
-
-            for (int i = 0; i < interests.Count; i++)
-            {
-                RemoveObserver(interests[i], mediator);
-            }
-
-            m_mediatorMap.Remove(mediatorName);
-        }
-
-        if (mediator != null) mediator.OnRemove();
-        return mediator;
-    }
-    /// <summary>
-    /// 是否有mdeiator
-    /// </summary>
-    /// <param name="mediatorName"></param>
-    /// <returns></returns>
-    public bool HasMediator(string mediatorName)
-    {
-        lock (m_syncRoot)
-        {
-            return m_mediatorMap.ContainsKey(mediatorName);
-        }
-    }
     /// <summary>
     /// 是否含有观察者
     /// </summary>
@@ -210,4 +156,20 @@ public class View :IView
         }
     }
 
+    public void RemoveMediator(IMediator mediator)
+    {
+        lock (m_syncRoot)
+        {
+            if (!m_mediatorMap.Contains(mediator)) return;
+
+            IList<string> interests = mediator.ListNotificationInterests();
+
+            for (int i = 0; i < interests.Count; i++)
+            {
+                RemoveObserver(interests[i], mediator);
+            }
+
+            m_mediatorMap.Remove(mediator);
+        }
+    }
 }

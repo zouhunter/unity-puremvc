@@ -1,34 +1,48 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
 public class Model : IModel
 {
 	public static volatile IModel Instance = new Model();
-    protected readonly object m_syncRoot = new object();
 
-    protected IDictionary<string, IProxy> m_proxyMap;
-	protected Model()
+    readonly object m_syncRoot = new object();
+    IDictionary<string, IProxy> m_proxyMap;
+    Dictionary<string, UnityAction<IProxy>> waitRegisterEvents = new Dictionary<string, UnityAction<IProxy>>();
+	private Model()
 	{
 		m_proxyMap = new Dictionary<string, IProxy>();
-		InitializeModel();
 	}
-
-	protected virtual void InitializeModel()
-	{
-		
-	}
-
+   
 	public void RegisterProxy(IProxy proxy)
 	{
-		lock (m_syncRoot)
-		{
+		lock (m_syncRoot){
             m_proxyMap[proxy.ProxyName] = proxy;
 		}
 
-		proxy.OnRegister();
-	}
-	public T RetrieveProxy<T>(string proxyName) 
+        if (waitRegisterEvents.ContainsKey(proxy.ProxyName))
+        {
+            waitRegisterEvents[proxy.ProxyName].Invoke(proxy);
+            waitRegisterEvents.Remove(proxy.ProxyName);
+        }
+    }
+
+    public void RetrieveProxy<T>(string proxyName,UnityAction<T> retrieved) where T:IProxy
+    {
+        if (retrieved == null) return; 
+
+        if (HasProxy(proxyName))
+        {
+            retrieved(RetrieveProxy<T>(proxyName));
+        }
+        else
+        {
+            waitRegisterEvents.Add(proxyName,(x)=> { retrieved((T)x); });
+        }
+    }
+
+    T RetrieveProxy<T>(string proxyName) 
 	{
 		lock (m_syncRoot)
 		{
@@ -55,9 +69,15 @@ public class Model : IModel
 				m_proxyMap.Remove(proxyName);
 			}
 		}
-
-		if (proxy != null) proxy.OnRemove();
+        
         return proxy;
 	}
 
+    public void CansaleRetrieve(string proxyName)
+    {
+        if (waitRegisterEvents.ContainsKey(proxyName))
+        {
+            waitRegisterEvents.Remove(proxyName);
+        }
+    }
 }
