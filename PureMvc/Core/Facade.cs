@@ -7,6 +7,7 @@ public class Facade :Notifyer, IFacade
     protected IModel m_model;
     protected IView m_view;
     protected IController m_controller;
+    protected IEventHolder m_EventHolder;
 	public static volatile IFacade Instance = new Facade();
     protected readonly object m_syncRoot = new object();
     public Facade()
@@ -18,6 +19,7 @@ public class Facade :Notifyer, IFacade
         InitializeModel();
         InitializeController();
         InitializeView();
+        InitializeEventHolder();
     }
     protected virtual void InitializeController()
     {
@@ -34,6 +36,11 @@ public class Facade :Notifyer, IFacade
         if (m_view != null) return;
         m_view = View.Instance;
     }
+    protected virtual void InitializeEventHolder()
+    {
+        if (m_EventHolder != null) return;
+        m_EventHolder = EventHolder.Instance;
+    }
 
     #region 访问三大层的
     public void RegisterProxy(IProxy prox)
@@ -41,10 +48,21 @@ public class Facade :Notifyer, IFacade
         m_model.RegisterProxy(prox);
     }
 
-    public void RetrieveProxy<T>(string name,UnityAction<T> onRetrived) where T : IProxy
+    public void CansaleRetrieve(string name)
     {
-        m_model.RetrieveProxy<T>(name, onRetrived);
+        m_model.CansaleRetrieve(name);
     }
+
+    public void RetrieveProxy<T>(string name, UnityAction<T> onRetieved) where T : IProxy
+    {
+        m_model.RetrieveProxy<T>(name, onRetieved);
+    }
+
+    public void RemoveMediator(IMediator name)
+    {
+        m_view.RemoveMediator(name);
+    }
+
 
     public IProxy RemoveProxy(string name)
     {
@@ -56,7 +74,7 @@ public class Facade :Notifyer, IFacade
         m_view.RegisterMediator(mediator);
     }
 
-	public void RegisterCommand<T>(string observerName) where T:ICommand,new()
+    public void RegisterCommand<T>(string observerName) where T:ICommand,new()
     {
         m_controller.RegisterCommand(observerName, typeof(T));
     }
@@ -66,14 +84,33 @@ public class Facade :Notifyer, IFacade
         m_controller.RemoveCommand(observerName);
     }
 
-    public void CansaleRetrieve(string name)
+    #endregion
+
+    #region 访问事件系统
+    public void RegisterEvent(string noti, UnityAction even)
     {
-        m_model.CansaleRetrieve(name);
+        m_EventHolder.AddDelegate(noti, even);
     }
 
-    public void RemoveMediator(IMediator name)
+    public void RegisterEvent<T>(string noti, UnityAction<T> even)
     {
-        m_view.RemoveMediator(name);
+        m_EventHolder.AddDelegate(noti, even);
     }
+    
+    public void RemoveEvent(string noti, UnityAction even)
+    {
+        m_EventHolder.RemoveDelegate(noti, even);
+    }
+
+    public void RemoveEvent<T>(string noti, UnityAction<T> even)
+    {
+        m_EventHolder.RemoveDelegate(noti, even);
+    }
+
+    public void RemoveEvents(string noti)
+    {
+        m_EventHolder.RemoveDelegates(noti);
+    }
+
     #endregion
 }
