@@ -31,7 +31,7 @@ public class Register : MonoBehaviour {
     {
         TestProxy proxy = new TestProxy("haha");
         proxy.Data = "dddddddddd";
-        Facade.Instance.RegisterProxy(proxy);
+        Facade.RegisterProxy(proxy);
     }
    
 }

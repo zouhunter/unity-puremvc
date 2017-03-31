@@ -7,79 +7,103 @@ using PureMVC.Internal;
 namespace PureMVC
 {
 
-    public class Facade : Notifyer, IFacade
+    public static class Facade
     {
-        protected IModel m_model;
-        protected IView m_view;
-        protected IController m_controller;
-        public static volatile IFacade Instance = new Facade();
-        protected readonly object m_syncRoot = new object();
-        public Facade()
+        static IModel m_model;
+        static IView m_view;
+        static IController m_controller;
+        static Facade()
         {
             InitializeFacade();
         }
-        protected virtual void InitializeFacade()
+        private static void InitializeFacade()
         {
             InitializeModel();
             InitializeController();
             InitializeView();
         }
-        protected virtual void InitializeController()
+        private static void InitializeController()
         {
             if (m_controller != null) return;
             m_controller = Controller.Instance;
         }
-        protected virtual void InitializeModel()
+        private static void InitializeModel()
         {
             if (m_model != null) return;
             m_model = Model.Instance;
         }
-        protected virtual void InitializeView()
+        private static void InitializeView()
         {
             if (m_view != null) return;
             m_view = View.Instance;
         }
 
         #region 访问三大层的
-        public void RegisterProxy(IProxy prox)
+        public static void RegisterProxy(IProxy prox)
         {
             m_model.RegisterProxy(prox);
         }
 
-        public void CansaleRetrieve(string name)
+        public static void CansaleRetrieve(string name)
         {
             m_model.CansaleRetrieve(name);
         }
 
-        public void RetrieveProxy<T>(string name, UnityAction<T> onRetieved) where T : IProxy
+        public static void RetrieveProxy<T>(string name, UnityAction<T> onRetieved) where T : IProxy
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
 
-        public void RemoveMediator(IMediator name)
+        public static void RemoveMediator(IMediator name)
         {
             m_view.RemoveMediator(name);
         }
 
 
-        public IProxy RemoveProxy(string name)
+        public static IProxy RemoveProxy(string name)
         {
             return m_model.RemoveProxy(name);
         }
 
-        public void RegisterMediator(IMediator mediator)
+        public static void RegisterMediator(IMediator mediator)
         {
             m_view.RegisterMediator(mediator);
         }
 
-        public void RegisterCommand<T>(string observerName) where T : ICommand, new()
+        public static void RegisterCommand<T>(string observerName) where T : ICommand, new()
         {
             m_controller.RegisterCommand(observerName, typeof(T));
         }
 
-        public void RemoveCommand(string observerName)
+        public static void RemoveCommand(string observerName)
         {
             m_controller.RemoveCommand(observerName);
+        }
+
+        /// <summary>
+        /// 通知观察者
+        /// </summary>
+        /// <param name="notification"></param>
+        private static void NotifyObservers<T>(INotification<T> notification)
+        {
+            if (m_view.HasObserver(notification.ObserverName))
+            {
+                m_view.NotifyObservers<T>(notification);
+            }
+        }
+        public static void SendNotification(string observeName)
+        {
+            SendNotification<object>(observeName, null, null);
+        }
+        public static void SendNotification<T>(string observeName, T body)
+        {
+            SendNotification<T>(observeName, body, null);
+        }
+        public static void SendNotification<T>(string observeName, T body, Type type)
+        {
+            Notification<T> notify = Notification<T>.Allocate(observeName, body, type);
+            NotifyObservers(notify);
+            notify.Release();
         }
 
         #endregion

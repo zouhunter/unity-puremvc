@@ -9,7 +9,7 @@ using PureMVC;
 public class Receiver : MonoBehaviour {
     void Start()
     {
-        Facade.Instance.RetrieveProxy<TestProxy>("haha", OnRetrived);
+        Facade.RetrieveProxy<TestProxy>("haha", OnRetrived);
     }
     void OnRetrived(TestProxy proxy)
     {
@@ -19,7 +19,7 @@ public class Receiver : MonoBehaviour {
     {
         if (GUILayout.Button("改变image色"))
         {
-            Facade.Instance.SendNotification<Color>("color", Color.red);
+            Facade.SendNotification<Color>("color", Color.red);
         }
     }
 }
