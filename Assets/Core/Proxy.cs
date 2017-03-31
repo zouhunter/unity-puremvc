@@ -1,20 +1,27 @@
 ﻿using System;
-public abstract class Proxy<T> :Notifyer, IProxy<T>
+using PureMVC.Internal;
+
+namespace PureMVC
 {
-    public Proxy(string name){
-        m_proxyName = name;
-    }
-    public Proxy(string name, T data)
-    {
-        m_proxyName = name;
-        Data = data;
-    }
 
-    public abstract T Data { get; set; }
-
-    protected string m_proxyName;
-    public virtual string ProxyName
+    public abstract class Proxy<T> : Notifyer, IProxy<T>
     {
-        get { return (m_proxyName != null) ? m_proxyName : this.ToString(); }
+        public Proxy(string name)
+        {
+            m_proxyName = name;
+        }
+        public Proxy(string name, T data)
+        {
+            m_proxyName = name;
+            Data = data;
+        }
+
+        public abstract T Data { get; set; }
+
+        protected string m_proxyName;
+        public virtual string ProxyName
+        {
+            get { return (m_proxyName != null) ? m_proxyName : this.ToString(); }
+        }
     }
 }

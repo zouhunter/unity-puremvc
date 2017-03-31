@@ -1,17 +1,19 @@
 /// Tim Tryzbiak, ootii, LLC
 using System;
 using System.Collections.Generic;
+using PureMVC.Internal;
 
-namespace Collections
+namespace PureMVC
 {
-	/// <summary>
-	/// Represents a pool of objects that we can pull from in order
-	/// to prevent constantly reallocating new objects. This collection
-	/// is meant to be fast, so we limit the "lock" that we use and do not
-	/// track the instances that we hand out.
-	/// </summary>
-	/// <typeparam name="T">The type of object in the pool.</typeparam>
-	public sealed class ObjectPool<T>
+
+    /// <summary>
+    /// Represents a pool of objects that we can pull from in order
+    /// to prevent constantly reallocating new objects. This collection
+    /// is meant to be fast, so we limit the "lock" that we use and do not
+    /// track the instances that we hand out.
+    /// </summary>
+    /// <typeparam name="T">The type of object in the pool.</typeparam>
+    public sealed class ObjectPool<T>
 		where T : new()
 	{
 		/// <summary>
