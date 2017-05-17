@@ -3,9 +3,9 @@ using System;
 using System.Collections;
 using UnityEngine.Events;
 using System.Collections.Generic;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public class View : IView

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public class Notification<T> : INotification<T>

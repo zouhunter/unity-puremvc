@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections.Generic;
 using System;
-namespace PureMVC.Unity
+namespace UnityEngine
 {
 
     public class SceneMain : MonoBehaviour
@@ -101,14 +101,16 @@ namespace PureMVC.Unity
             #endregion
         }
 
-        private static SceneMain _abstruct;
-        public static SceneMain Abstruct
+        protected static SceneMain _abstruct;
+
+        public static SceneMain Current
         {
             get
             {
                 return _abstruct;
             }
         }
+
         private EventHold _eventHold;
         protected virtual void Awake()
         {
@@ -152,15 +154,13 @@ namespace PureMVC.Unity
         #endregion
     }
 
-    public class SceneMain<T> : SceneMain
+    public class SceneMain<T> : SceneMain where T: SceneMain
     {
-        private static T _current;
-        public static T Current { get { return _current; } }
+        public new static T Current { get { return (T)_abstruct; } }
 
         protected override void Awake()
         {
             base.Awake();
-            _current = GetComponent<T>();
         }
     }
 

@@ -3,9 +3,9 @@ using UnityEngine.Events;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public class Model : IModel
@@ -44,7 +44,14 @@ namespace PureMVC
             }
             else
             {
-                waitRegisterEvents.Add(proxyName, (x) => { retrieved((T)x); });
+                if (waitRegisterEvents.ContainsKey(proxyName))
+                {
+                    waitRegisterEvents[proxyName] += (x) => { retrieved((T)x); };
+                }
+                else
+                {
+                    waitRegisterEvents.Add(proxyName, (x) => { retrieved((T)x); });
+                }
             }
         }
 

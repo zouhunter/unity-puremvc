@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public class Controller : IController

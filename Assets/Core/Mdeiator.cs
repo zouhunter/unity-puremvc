@@ -3,9 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System;
 using System.Collections.Generic;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public abstract class Mediator : MonoBehaviour, IMediator
@@ -24,7 +24,7 @@ namespace PureMVC
         }
         public virtual void OnEnable()
         {
-            Facade.Instance.RegisterMediator(this);
+            Facade.RegisterMediator(this);
         }
         public abstract IList<string> ListNotificationInterests();
         public abstract void HandleNotification(INotification notification);
@@ -33,7 +33,7 @@ namespace PureMVC
         public virtual void OnRemove() { }
         public virtual void OnDisable()
         {
-            Facade.Instance.RemoveMediator(this);
+            Facade.RemoveMediator(this);
         }
     }
 
@@ -41,13 +41,13 @@ namespace PureMVC
     {
         public virtual void OnEnable()
         {
-            Facade.Instance.RegisterMediator(this);
+            Facade.RegisterMediator(this);
         }
         public abstract IList<string> ListNotificationInterests();
         public abstract void HandleNotification(INotification<T> notification);
         public virtual void OnDisable()
         {
-            Facade.Instance.RemoveMediator(this);
+            Facade.RemoveMediator(this);
         }
     }
 }

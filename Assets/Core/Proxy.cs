@@ -1,10 +1,10 @@
 ﻿using System;
-using PureMVC.Internal;
+using UnityEngine;
 
-namespace PureMVC
+namespace UnityEngine
 {
 
-    public abstract class Proxy<T> : Notifyer, IProxy<T>
+    public class Proxy<T> : IProxy<T>
     {
         public Proxy(string name)
         {
@@ -16,9 +16,10 @@ namespace PureMVC
             Data = data;
         }
 
-        public abstract T Data { get; set; }
+        public virtual T Data { get; set; }
 
         protected string m_proxyName;
+
         public virtual string ProxyName
         {
             get { return (m_proxyName != null) ? m_proxyName : this.ToString(); }

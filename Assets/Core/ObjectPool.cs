@@ -1,9 +1,9 @@
 /// Tim Tryzbiak, ootii, LLC
 using System;
 using System.Collections.Generic;
-using PureMVC.Internal;
+using UnityEngine;
 
-namespace PureMVC
+namespace UnityEngine
 {
 
     /// <summary>

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Reflection;
-using PureMVC.Internal;
 
-namespace PureMVC
+
+namespace UnityEngine
 {
 
     public class Observer : IObserver
