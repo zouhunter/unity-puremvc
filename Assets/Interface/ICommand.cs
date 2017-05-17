@@ -1,9 +1,12 @@
-﻿namespace PureMVC.Internal
+﻿namespace UnityEngine
 {
-
-    public interface ICommand<T> : ICommand
+    public interface ICommandBase { }
+    public interface ICommand : ICommandBase
     {
-        void Execute(INotification<T> notify);
+        void Execute();
     }
-    public interface ICommand { }
+    public interface ICommand<T> : ICommandBase
+    {
+        void Execute(T notify);
+    }
 }

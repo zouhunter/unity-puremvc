@@ -1,5 +1,5 @@
 ﻿using System;
-namespace PureMVC.Internal
+namespace UnityEngine
 {
 
     public interface INotifier

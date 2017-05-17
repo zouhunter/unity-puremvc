@@ -1,8 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine.Events;
 using System.Collections.Generic;
-using System;
-using System.Reflection;
 
 
 namespace UnityEngine
@@ -34,7 +31,7 @@ namespace UnityEngine
             }
         }
 
-        public void RetrieveProxy<T>(string proxyName, UnityAction<T> retrieved) where T : IProxy
+        public void RetrieveProxy<T>(string proxyName, UnityAction<T> retrieved) 
         {
             if (retrieved == null) return;
 
@@ -46,11 +43,21 @@ namespace UnityEngine
             {
                 if (waitRegisterEvents.ContainsKey(proxyName))
                 {
-                    waitRegisterEvents[proxyName] += (x) => { retrieved((T)x); };
+                    waitRegisterEvents[proxyName] += (x) => {
+                        if (x is IProxy<T>)
+                        {
+                            retrieved((x as IProxy<T>).Data);
+                        }
+                    };
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) => { retrieved((T)x); });
+                    waitRegisterEvents.Add(proxyName, (x) => {
+                        if (x is IProxy<T>)
+                        {
+                            retrieved((x as IProxy<T>).Data);
+                        }
+                    });
                 }
             }
         }
@@ -59,8 +66,14 @@ namespace UnityEngine
         {
             lock (m_syncRoot)
             {
-                if (!m_proxyMap.ContainsKey(proxyName)) return default(T);
-                return (T)m_proxyMap[proxyName];
+                if (m_proxyMap.ContainsKey(proxyName) && m_proxyMap[proxyName] is IProxy<T>)
+                {
+                   return ((m_proxyMap[proxyName] as IProxy<T>).Data);
+                }
+                else
+                {
+                    return default(T);
+                }
             }
         }
         public bool HasProxy(string proxyName)

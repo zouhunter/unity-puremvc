@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-namespace PureMVC.Internal
+namespace UnityEngine
 {
 
     public interface IProxy

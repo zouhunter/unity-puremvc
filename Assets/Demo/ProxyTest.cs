@@ -1,13 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-using System.Collections;
 using System.Collections.Generic;
-using PureMVC;
 public class TestProxy : Proxy<string>
 {
-    public TestProxy(string name) :base(name)
+    public TestProxy(string name) : base(name)
     {
 
     }
@@ -26,12 +23,13 @@ public class TestProxy : Proxy<string>
     }
 }
 
-public class Register : MonoBehaviour {
+public class ProxyTest : MonoBehaviour {
+
     void Start()
     {
         TestProxy proxy = new TestProxy("haha");
         proxy.Data = "dddddddddd";
-        Facade.Instance.RegisterProxy(proxy);
+        Facade.RegisterProxy(proxy);
     }
-   
+  
 }

@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
-
 
 namespace UnityEngine
 {
-
     public class Controller : IController
     {
         protected IView m_view;
         protected IDictionary<string, Type> m_commandMap;
         protected static volatile IController m_instance;
-        protected readonly object m_syncRoot = new object();
-        protected static readonly object m_staticSyncRoot = new object();
         protected Controller()
         {
             m_commandMap = new Dictionary<string, Type>();
@@ -25,15 +19,13 @@ namespace UnityEngine
             {
                 if (m_instance == null)
                 {
-                    lock (m_staticSyncRoot)
-                    {
-                        if (m_instance == null) m_instance = new Controller();
-                    }
+                    if (m_instance == null) m_instance = new Controller();
                 }
 
                 return m_instance;
             }
         }
+
         static Controller()
         {
 
@@ -42,62 +34,61 @@ namespace UnityEngine
         {
             m_view = View.Instance;
         }
-
-        public virtual void RegisterCommand(string noti, Type commandType)
+        /// <summary>
+        /// 注册非泛型命令
+        /// </summary>
+        /// <param name="notificationName"></param>
+        /// <param name="newType"></param>
+        public virtual void RegisterCommand(string notificationName, Type newType)
         {
-            lock (m_syncRoot)
+            if (!m_commandMap.ContainsKey(notificationName))
             {
-                if (!m_commandMap.ContainsKey(noti))
-                {
-                    m_view.RegisterObserver(noti, new Observer("ExecuteCommand", this));
-                    m_commandMap.Add(noti, commandType);
-                }
+                IObserver observer = new Observer((notification) => {
+                    Type type;
+                    if (m_commandMap.TryGetValue(notification.ObserverName, out type))
+                    {
+                        var commandInstance = Activator.CreateInstance(type);// commandFunc.Invoke();
+                        if (commandInstance is ICommand) (commandInstance as ICommand).Execute();
+                    }
+                }, this);
+                m_view.RegisterObserver(notificationName, observer);
             }
+            m_commandMap[notificationName] = newType;
         }
         /// <summary>
-        /// 执行Command
+        /// 注册泛型命令
         /// </summary>
-        /// <param name="note"></param>
-        public virtual void ExecuteCommand(INotification note)
+        /// <typeparam name="T"></typeparam>
+        /// <param name="notificationName"></param>
+        /// <param name="newcommandFunc"></param>
+        public virtual void RegisterCommand<T>(string notificationName, Type newType)
         {
-            Type commandType = null;
-
-            lock (m_syncRoot)
+            if (!m_commandMap.ContainsKey(notificationName))
             {
-                if (!m_commandMap.ContainsKey(note.ObserverName)) return;
-                commandType = m_commandMap[note.ObserverName];
+                IObserver<T> observer = new Observer<T>((notification) => {
+                    Type type;
+                    if (m_commandMap.TryGetValue(notification.ObserverName, out type))
+                    {
+                        var commandInstance = Activator.CreateInstance(type);// commandFunc.Invoke();
+                        if (commandInstance is ICommand<T>) (commandInstance as ICommand<T>).Execute(notification.Body);
+                        else if (commandInstance is ICommand) (commandInstance as ICommand).Execute();
+                    }
+                }, this);
+                m_view.RegisterObserver(notificationName, observer);
             }
-
-            object commandInstance = Activator.CreateInstance(commandType);
-
-            Type t = commandInstance.GetType();
-            BindingFlags f = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
-            MethodInfo mi = t.GetMethod("Execute", f);
-            try
-            {
-                mi.Invoke(commandInstance, new object[] { note });
-            }
-            catch (UnityException e)
-            {
-                Debug.LogWarningFormat("使用{0}的Mediator格式不对或者观察者名字重复:{1}", note.ObserverName, e);
-            }
+            m_commandMap[notificationName] = newType;
         }
+
         public virtual bool HasCommand(string notificationName)
         {
-            lock (m_syncRoot)
-            {
-                return m_commandMap.ContainsKey(notificationName);
-            }
+            return m_commandMap.ContainsKey(notificationName);
         }
         public virtual void RemoveCommand(string notificationName)
         {
-            lock (m_syncRoot)
+            if (m_commandMap.ContainsKey(notificationName))
             {
-                if (m_commandMap.ContainsKey(notificationName))
-                {
-                    m_view.RemoveObserver(notificationName, this);
-                    m_commandMap.Remove(notificationName);
-                }
+                m_view.RemoveObserver(notificationName, this);
+                m_commandMap.Remove(notificationName);
             }
         }
     }

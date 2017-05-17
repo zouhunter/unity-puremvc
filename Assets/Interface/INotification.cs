@@ -1,7 +1,6 @@
 ﻿using System;
-namespace PureMVC.Internal
+namespace UnityEngine
 {
-
     public interface INotification
     {
         string ObserverName { get; set; }
@@ -10,9 +9,10 @@ namespace PureMVC.Internal
         bool Destroy { get; set; }
         bool IsUsing { get; set; }
     }
-
-    public interface INotification<T> : INotification
+    public interface INotification<T>: INotification
     {
+     
+  
         T Body { get; set; }
     }
 }

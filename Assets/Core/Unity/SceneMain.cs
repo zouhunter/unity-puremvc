@@ -10,8 +10,8 @@ namespace UnityEngine
     {
         public class EventHold
         {
-            public System.Action<string> MessageNotHandled;
-            public Dictionary<string, Delegate> m_needHandle = new Dictionary<string, Delegate>();
+            public UnityEngine.Events.UnityAction<string> MessageNotHandled;
+            public Dictionary<string, UnityAction<object>> m_needHandle = new Dictionary<string, UnityAction<object>>();
             public void NoMessageHandle(string rMessage)
             {
                 if (MessageNotHandled == null)
@@ -25,7 +25,7 @@ namespace UnityEngine
             }
 
             #region 注册注销事件
-            public void AddDelegate(string key, Delegate handle)
+            public void AddDelegate(string key, UnityAction<object> handle)
             {
                 // First check if we know about the message type
                 if (!m_needHandle.ContainsKey(key))
@@ -34,14 +34,14 @@ namespace UnityEngine
                 }
                 else
                 {
-                    m_needHandle[key] = Delegate.Combine(m_needHandle[key], handle);
+                    m_needHandle[key] += handle;
                 }
             }
-            public bool RemoveDelegate(string key, Delegate handle)
+            public bool RemoveDelegate(string key, UnityAction<object> handle)
             {
                 if (m_needHandle.ContainsKey(key))
                 {
-                    m_needHandle[key] = Delegate.Remove(m_needHandle[key], handle);
+                    m_needHandle[key] -=  handle;
                     if (m_needHandle[key] == null)
                     {
                         m_needHandle.Remove(key);
@@ -70,7 +70,7 @@ namespace UnityEngine
 
                 if (m_needHandle.ContainsKey(key))
                 {
-                    m_needHandle[key].DynamicInvoke();
+                    m_needHandle[key].Invoke(null);
 
                     lReportMissingRecipient = false;
                 }
@@ -87,7 +87,7 @@ namespace UnityEngine
 
                 if (m_needHandle.ContainsKey(key))
                 {
-                    m_needHandle[key].DynamicInvoke(value);
+                    m_needHandle[key].Invoke(value);
 
                     lReportMissingRecipient = false;
                 }
@@ -118,22 +118,14 @@ namespace UnityEngine
             _abstruct = this;
         }
         #region 访问事件系统
-        public void RegisterEvent(string noti, UnityAction even)
+
+        public void RegisterEvent<T>(string noti, UnityAction<object> even)
         {
             _eventHold.AddDelegate(noti, even);
         }
 
-        public void RegisterEvent<T>(string noti, UnityAction<T> even)
-        {
-            _eventHold.AddDelegate(noti, even);
-        }
 
-        public void RemoveEvent(string noti, UnityAction even)
-        {
-            _eventHold.RemoveDelegate(noti, even);
-        }
-
-        public void RemoveEvent<T>(string noti, UnityAction<T> even)
+        public void RemoveEvent<T>(string noti, UnityAction<object> even)
         {
             _eventHold.RemoveDelegate(noti, even);
         }

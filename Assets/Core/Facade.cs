@@ -48,14 +48,14 @@ namespace UnityEngine
             m_model.CansaleRetrieve(name);
         }
 
-        public static void RetrieveProxy<T>(string name, UnityAction<T> onRetieved) where T : IProxy
+        public static void RetrieveProxy<T>(string name, UnityAction<T> onRetieved)
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
 
-        public static void RemoveMediator(IMediator name)
+        public static void RemoveMediator<T>(IMediator<T> mediator)
         {
-            m_view.RemoveMediator(name);
+            m_view.RemoveMediator(mediator);
         }
 
 
@@ -64,12 +64,16 @@ namespace UnityEngine
             return m_model.RemoveProxy(name);
         }
 
-        public static void RegisterMediator(IMediator mediator)
+        public static void RegisterMediator<T>(IMediator<T> mediator)
         {
             m_view.RegisterMediator(mediator);
         }
 
-        public static void RegisterCommand<T>(string observerName) where T : ICommand, new()
+        public static void RegisterCommand<T,P>(string observerName)
+        {
+            m_controller.RegisterCommand<P>(observerName, typeof(T));
+        }
+        public static void RegisterCommand<T>(string observerName)
         {
             m_controller.RegisterCommand(observerName, typeof(T));
         }

@@ -1,77 +1,50 @@
 ﻿using UnityEngine;
 using System;
-using System.Reflection;
-
 
 namespace UnityEngine
 {
-
-    public class Observer : IObserver
+    public class Observer<T> : IObserver<T>
     {
-        protected readonly object m_syncRoot = new object();
-        public Observer(string notifyMethod, object notifyContext)
+        public Observer(UnityEngine.Events.UnityAction<INotification<T>> notifyMethod, object notifyContext)
         {
-            m_notifyMethod = notifyMethod;
-            m_notifyContext = notifyContext;
+            NotifyMethod = notifyMethod;
+            NotifyContext = notifyContext;
         }
-        public virtual void NotifyObserver<T>(INotification<T> notification)
+  
+        public virtual void NotifyObserver(INotification<T> Notification)
         {
-            object context;
-            string method;
-
-            // Retrieve the current state of the object, then notify outside of our thread safe block
-            lock (m_syncRoot)
-            {
-                context = NotifyContext;
-                method = NotifyMethod;
-            }
-
-            Type t = context.GetType();
-            BindingFlags f = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase;
-            MethodInfo mi = t.GetMethod(method, f);
-            try
-            {
-                mi.Invoke(context, new object[] { notification });
-            }
-            catch (UnityException e)
-            {
-                Debug.LogWarningFormat(e + notification.ObserverName);
-            }
+            NotifyMethod.Invoke(Notification);
         }
         public virtual bool CompareNotifyContext(object obj)
         {
-            lock (m_syncRoot)
-            {
-                return NotifyContext.Equals(obj);
-            }
+            return NotifyContext.Equals(obj);
         }
 
-        public virtual string NotifyMethod
+        public UnityEngine.Events.UnityAction<INotification<T>> NotifyMethod { get; set; }
+
+        public object NotifyContext { get; set; }
+
+    }
+    public class Observer : IObserver
+    {
+        public Observer(UnityEngine.Events.UnityAction<INotification> notifyMethod, object notifyContext)
         {
-            private get
-            {
-                return m_notifyMethod;
-            }
-            set
-            {
-                m_notifyMethod = value;
-            }
+            NotifyMethod = notifyMethod;
+            NotifyContext = notifyContext;
         }
-        public virtual object NotifyContext
+        public virtual void NotifyObserver(INotification Notification)
         {
-            private get
-            {
-                return m_notifyContext;
-            }
-            set
-            {
-                m_notifyContext = value;
-            }
+            NotifyMethod.Invoke(Notification);
         }
 
-        private string m_notifyMethod;
+        public virtual bool CompareNotifyContext(object obj)
+        {
+            return NotifyContext.Equals(obj);
+        }
 
-        private object m_notifyContext;
+        public UnityEngine.Events.UnityAction<INotification> NotifyMethod { get; set; }
+
+        public object NotifyContext { get; set; }
 
     }
 }
