@@ -12,6 +12,7 @@ namespace UnityEngine
         {
             public UnityEngine.Events.UnityAction<string> MessageNotHandled;
             public Dictionary<string, UnityAction<object>> m_needHandle = new Dictionary<string, UnityAction<object>>();
+            public Dictionary<string, UnityAction> m_needHandle0 = new Dictionary<string, UnityAction>();
             public void NoMessageHandle(string rMessage)
             {
                 if (MessageNotHandled == null)
@@ -37,6 +38,18 @@ namespace UnityEngine
                     m_needHandle[key] += handle;
                 }
             }
+            public void AddDelegate(string key, UnityAction handle)
+            {
+                // First check if we know about the message type
+                if (!m_needHandle0.ContainsKey(key))
+                {
+                    m_needHandle0.Add(key, handle);
+                }
+                else
+                {
+                    m_needHandle0[key] += handle;
+                }
+            }
             public bool RemoveDelegate(string key, UnityAction<object> handle)
             {
                 if (m_needHandle.ContainsKey(key))
@@ -50,16 +63,29 @@ namespace UnityEngine
                 }
                 return true;
             }
+            public bool RemoveDelegate(string key, UnityAction handle)
+            {
+                if (m_needHandle0.ContainsKey(key))
+                {
+                    m_needHandle0[key] -= handle;
+                    if (m_needHandle0[key] == null)
+                    {
+                        m_needHandle0.Remove(key);
+                        return false;
+                    }
+                }
+                return true;
+            }
             public void RemoveDelegates(string key)
             {
                 if (m_needHandle.ContainsKey(key))
                 {
                     m_needHandle.Remove(key);
                 }
-            }
-            public bool HaveEvent(string key)
-            {
-                return m_needHandle.ContainsKey(key);
+                if (m_needHandle0.ContainsKey(key))
+                {
+                    m_needHandle0.Remove(key);
+                }
             }
             #endregion
 
@@ -118,13 +144,19 @@ namespace UnityEngine
             _abstruct = this;
         }
         #region 访问事件系统
-
+        public void RegisterEvent(string noti, UnityAction even)
+        {
+            _eventHold.AddDelegate(noti, even);
+        }
         public void RegisterEvent<T>(string noti, UnityAction<object> even)
         {
             _eventHold.AddDelegate(noti, even);
         }
 
-
+        public void RemoveEvent(string noti, UnityAction even)
+        {
+            _eventHold.RemoveDelegate(noti, even);
+        }
         public void RemoveEvent<T>(string noti, UnityAction<object> even)
         {
             _eventHold.RemoveDelegate(noti, even);
