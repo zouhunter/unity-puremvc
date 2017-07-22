@@ -12,6 +12,6 @@ namespace UnityEngine
         void RemoveObserver(string observerName, object notifyContext);
 
         void RegisterMediator<T>(IMediator<T> mediator);
-        void RemoveMediator(IMediator mediator);
+        void RemoveMediator(global::IAcceptor mediator);
     }
 }

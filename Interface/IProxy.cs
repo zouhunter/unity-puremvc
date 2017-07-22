@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 namespace UnityEngine
 {
-
-    public interface IProxy
-    {
-        string ProxyName { get; }
-    }
-    public interface IProxy<T> : IProxy
+    public interface IProxy<T> : IAcceptor
     {
         T Data { get; set; }
     }

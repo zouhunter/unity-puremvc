@@ -6,11 +6,11 @@ namespace UnityEngine
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<string, Type> m_commandMap;
+        protected IDictionary<string, global::IAcceptor> m_commandMap;
         protected static volatile IController m_instance;
         protected Controller()
         {
-            m_commandMap = new Dictionary<string, Type>();
+            m_commandMap = new Dictionary<string, global::IAcceptor>();
             InitializeController();
         }
         public static IController Instance
@@ -39,21 +39,22 @@ namespace UnityEngine
         /// </summary>
         /// <param name="notificationName"></param>
         /// <param name="newType"></param>
-        public virtual void RegisterCommand(string notificationName, Type newType)
+        public virtual void RegisterCommand(Type newType)
         {
+            var commandInstance = Activator.CreateInstance(newType) as global::IAcceptor;
+            var notificationName = commandInstance.Acceptor;
             if (!m_commandMap.ContainsKey(notificationName))
             {
                 IObserver observer = new Observer((notification) => {
-                    Type type;
+                    global::IAcceptor type;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out type))
                     {
-                        var commandInstance = Activator.CreateInstance(type);// commandFunc.Invoke();
-                        if (commandInstance is ICommand) (commandInstance as ICommand).Execute();
+                        if (type is ICommand) (commandInstance as ICommand).Execute();
                     }
                 }, this);
                 m_view.RegisterObserver(notificationName, observer);
             }
-            m_commandMap[notificationName] = newType;
+            m_commandMap[notificationName] = commandInstance;
         }
         /// <summary>
         /// 注册泛型命令
@@ -61,22 +62,25 @@ namespace UnityEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="notificationName"></param>
         /// <param name="newcommandFunc"></param>
-        public virtual void RegisterCommand<T>(string notificationName, Type newType)
+        public virtual void RegisterCommand<T>(Type newType)
         {
+            Debug.Log(newType.ToString());
+            var commandInstance = Activator.CreateInstance(newType) as global::IAcceptor;
+            var notificationName = commandInstance.Acceptor;
+
             if (!m_commandMap.ContainsKey(notificationName))
             {
                 IObserver<T> observer = new Observer<T>((notification) => {
-                    Type type;
+                    global::IAcceptor type;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out type))
                     {
-                        var commandInstance = Activator.CreateInstance(type);// commandFunc.Invoke();
-                        if (commandInstance is ICommand<T>) (commandInstance as ICommand<T>).Execute(notification.Body);
-                        else if (commandInstance is ICommand) (commandInstance as ICommand).Execute();
+                        if (type is ICommand<T>) (commandInstance as ICommand<T>).Execute(notification.Body);
+                        else if (type is ICommand) (commandInstance as ICommand).Execute();
                     }
                 }, this);
                 m_view.RegisterObserver(notificationName, observer);
             }
-            m_commandMap[notificationName] = newType;
+            m_commandMap[notificationName] = commandInstance;
         }
 
         public virtual bool HasCommand(string notificationName)

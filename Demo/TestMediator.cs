@@ -13,8 +13,11 @@ public class TestMediator : Mediator<Color>
         GetComponent<Image>().color = notification;
     }
 
-    public override IList<string> ListNotificationInterests()
+    public override string Acceptor
     {
-        return new string[] { "color" };
+        get
+        {
+            return  "color" ;
+        }
     }
 }

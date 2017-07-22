@@ -6,13 +6,13 @@ namespace UnityEngine
 
     public class View : IView
     {
-        protected IList<IMediator> m_mediatorMap;
+        protected IList<global::IAcceptor> m_mediatorMap;
         protected IDictionary<string, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
 
         protected View()
         {
-            m_mediatorMap = new List<IMediator>();
+            m_mediatorMap = new List<global::IAcceptor>();
             m_observerMap = new Dictionary<string, List<IObserverBase>>();
             InitializeView();
         }
@@ -30,7 +30,7 @@ namespace UnityEngine
         }
         protected virtual void InitializeView()
         {
-            
+
         }
         /// <summary>
         /// 注册成为观察者
@@ -155,20 +155,10 @@ namespace UnityEngine
             // Register the Mediator for retrieval by name
             m_mediatorMap.Add(mediator);
 
-            // Get Notification interests, if any.
-            IList<string> interests = mediator.ListNotificationInterests();
-            // Register Mediator as an observer for each of its notification interests
-            if (interests.Count > 0)
-            {
-                // Create Observer
-                IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(x.Body), mediator);
+            // Create Observer
+            IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(x.Body), mediator);
 
-                // Register Mediator as Observer for its list of Notification interests
-                for (int i = 0; i < interests.Count; i++)
-                {
-                    RegisterObserver(interests[i], observer);
-                }
-            }
+            RegisterObserver(mediator.Acceptor, observer);
         }
 
         /// <summary>
@@ -181,16 +171,11 @@ namespace UnityEngine
             return m_observerMap.ContainsKey(observerName);
         }
 
-        public void RemoveMediator(IMediator mediator)
+        public void RemoveMediator(global::IAcceptor mediator)
         {
             if (!m_mediatorMap.Contains(mediator)) return;
 
-            IList<string> interests = mediator.ListNotificationInterests();
-
-            for (int i = 0; i < interests.Count; i++)
-            {
-                RemoveObserver(interests[i], mediator);
-            }
+            RemoveObserver(mediator.Acceptor, mediator);
 
             m_mediatorMap.Remove(mediator);
         }

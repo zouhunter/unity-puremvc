@@ -38,7 +38,7 @@ namespace UnityEngine
         }
 
         #region 访问三大层的
-        public static void RegisterProxy(IProxy prox)
+        public static void RegisterProxy(IAcceptor prox)
         {
             m_model.RegisterProxy(prox);
         }
@@ -59,7 +59,7 @@ namespace UnityEngine
         }
 
 
-        public static IProxy RemoveProxy(string name)
+        public static IAcceptor RemoveProxy(string name)
         {
             return m_model.RemoveProxy(name);
         }
@@ -68,14 +68,18 @@ namespace UnityEngine
         {
             m_view.RegisterMediator(mediator);
         }
-
-        public static void RegisterCommand<T,P>(string observerName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T">command类型</typeparam>
+        /// <typeparam name="P">参数类型</typeparam>
+        public static void RegisterCommand<T,P>()
         {
-            m_controller.RegisterCommand<P>(observerName, typeof(T));
+            m_controller.RegisterCommand<P>(typeof(T));
         }
-        public static void RegisterCommand<T>(string observerName)
+        public static void RegisterCommand<T>()
         {
-            m_controller.RegisterCommand(observerName, typeof(T));
+            m_controller.RegisterCommand(typeof(T));
         }
 
         public static void RemoveCommand(string observerName)

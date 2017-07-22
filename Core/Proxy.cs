@@ -19,10 +19,12 @@ namespace UnityEngine
         public virtual T Data { get; set; }
 
         protected string m_proxyName;
-
-        public virtual string ProxyName
+        public string Acceptor
         {
-            get { return (m_proxyName != null) ? m_proxyName : this.ToString(); }
+            get
+            {
+                return m_proxyName;
+            }
         }
     }
 }

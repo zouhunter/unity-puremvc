@@ -14,7 +14,7 @@ namespace UnityEngine
         {
             Facade.RegisterMediator(this);
         }
-        public abstract IList<string> ListNotificationInterests();
+        public abstract string Acceptor { get; }
         public abstract void HandleNotification(T notification);
         public virtual void OnDisable()
         {

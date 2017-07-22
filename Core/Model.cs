@@ -10,24 +10,24 @@ namespace UnityEngine
         public static volatile IModel Instance = new Model();
 
         readonly object m_syncRoot = new object();
-        IDictionary<string, IProxy> m_proxyMap;
-        Dictionary<string, UnityAction<IProxy>> waitRegisterEvents = new Dictionary<string, UnityAction<IProxy>>();
+        IDictionary<string, IAcceptor> m_proxyMap;
+        Dictionary<string, UnityAction<IAcceptor>> waitRegisterEvents = new Dictionary<string, UnityAction<IAcceptor>>();
         private Model()
         {
-            m_proxyMap = new Dictionary<string, IProxy>();
+            m_proxyMap = new Dictionary<string, IAcceptor>();
         }
 
-        public void RegisterProxy(IProxy proxy)
+        public void RegisterProxy(IAcceptor proxy)
         {
             lock (m_syncRoot)
             {
-                m_proxyMap[proxy.ProxyName] = proxy;
+                m_proxyMap[proxy.Acceptor] = proxy;
             }
 
-            if (waitRegisterEvents.ContainsKey(proxy.ProxyName))
+            if (waitRegisterEvents.ContainsKey(proxy.Acceptor))
             {
-                waitRegisterEvents[proxy.ProxyName].Invoke(proxy);
-                waitRegisterEvents.Remove(proxy.ProxyName);
+                waitRegisterEvents[proxy.Acceptor].Invoke(proxy);
+                waitRegisterEvents.Remove(proxy.Acceptor);
             }
         }
 
@@ -83,15 +83,15 @@ namespace UnityEngine
                 return m_proxyMap.ContainsKey(proxyName);
             }
         }
-        public IProxy RemoveProxy(string proxyName)
+        public IAcceptor RemoveProxy(string proxyName)
         {
-            IProxy proxy = null;
+            IAcceptor proxy = null;
 
             lock (m_syncRoot)
             {
                 if (m_proxyMap.ContainsKey(proxyName))
                 {
-                    proxy = RetrieveProxy<IProxy>(proxyName);
+                    proxy = RetrieveProxy<IAcceptor>(proxyName);
                     m_proxyMap.Remove(proxyName);
                 }
             }
