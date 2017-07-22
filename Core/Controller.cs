@@ -64,7 +64,6 @@ namespace UnityEngine
         /// <param name="newcommandFunc"></param>
         public virtual void RegisterCommand<T>(Type newType)
         {
-            Debug.Log(newType.ToString());
             var commandInstance = Activator.CreateInstance(newType) as global::IAcceptor;
             var notificationName = commandInstance.Acceptor;
 

@@ -42,12 +42,4 @@ public class CommandTest : MonoBehaviour
         Facade.RegisterCommand<MyCommand1>();
         Facade.RegisterCommand<MyCommand2, string>();
     }
-
-    private void OnGUI()
-    {
-
-        {
-
-        }
-    }
 }
