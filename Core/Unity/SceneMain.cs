@@ -94,9 +94,9 @@ namespace UnityEngine
             {
                 bool lReportMissingRecipient = true;
 
-                if (m_needHandle.ContainsKey(key))
+                if (m_needHandle0.ContainsKey(key))
                 {
-                    m_needHandle[key].Invoke(null);
+                    m_needHandle0[key].Invoke();
 
                     lReportMissingRecipient = false;
                 }

@@ -43,6 +43,11 @@ namespace UnityEngine
             m_model.RegisterProxy(prox);
         }
 
+        internal static void SendNotification(object loadSettngData)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void CansaleRetrieve(string name)
         {
             m_model.CansaleRetrieve(name);
