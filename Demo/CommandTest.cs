@@ -21,17 +21,9 @@ public class MyCommand1 : Command
 }
 public class MyCommand2 : Command<string>
 {
-    public override string Acceptor
-    {
-        get
-        {
-            return "command2";
-        }
-    }
-
     public override void Execute(string value)
     {
-        MonoBehaviour.FindObjectOfType<Text>().text = "commond2";
+        MonoBehaviour.FindObjectOfType<Text>().text = "commond2" + value;
     }
 }
 

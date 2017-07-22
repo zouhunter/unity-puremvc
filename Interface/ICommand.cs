@@ -1,10 +1,10 @@
 ﻿namespace UnityEngine
 {
-    public interface ICommand : global::IAcceptor
+    public interface ICommand : IAcceptor
     {
         void Execute();
     }
-    public interface ICommand<T> : global::IAcceptor
+    public interface ICommand<T> : IAcceptor
     {
         void Execute(T notify);
     }
