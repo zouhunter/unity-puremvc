@@ -6,7 +6,7 @@ namespace UnityEngine
 
     public class View : IView
     {
-        protected IList<global::IAcceptor> m_mediatorMap;
+        protected IList<IAcceptor> m_mediatorMap;
         protected IDictionary<string, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
 

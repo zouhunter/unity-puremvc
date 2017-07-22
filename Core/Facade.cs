@@ -38,7 +38,7 @@ namespace UnityEngine
         }
 
         #region 访问三大层的
-        public static void RegisterProxy(IAcceptor prox)
+        public static void RegisterProxy<T>(IProxy<T> prox)
         {
             m_model.RegisterProxy(prox);
         }
@@ -52,36 +52,31 @@ namespace UnityEngine
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
+   
+        public static IProxy<T> RemoveProxy<T>(string name)
+        {
+            return m_model.RemoveProxy<T>(name);
+        }
+
+
+        public static void RegisterMediator<T>(IMediator<T> mediator)
+        {
+            m_view.RegisterMediator(mediator);
+        }
 
         public static void RemoveMediator<T>(IMediator<T> mediator)
         {
             m_view.RemoveMediator(mediator);
         }
 
-
-        public static IAcceptor RemoveProxy(string name)
+        public static void RegisterCommand<T,P>() where T : IAcceptor, new()
         {
-            return m_model.RemoveProxy(name);
+            m_controller.RegisterCommand<T,P>();
         }
-
-        public static void RegisterMediator<T>(IMediator<T> mediator)
+        public static void RegisterCommand<T>() where T : IAcceptor, new()
         {
-            m_view.RegisterMediator(mediator);
+            m_controller.RegisterCommand<T>();
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T">command类型</typeparam>
-        /// <typeparam name="P">参数类型</typeparam>
-        public static void RegisterCommand<T,P>()
-        {
-            m_controller.RegisterCommand<P>(typeof(T));
-        }
-        public static void RegisterCommand<T>()
-        {
-            m_controller.RegisterCommand(typeof(T));
-        }
-
         public static void RemoveCommand(string observerName)
         {
             m_controller.RemoveCommand(observerName);

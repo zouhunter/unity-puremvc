@@ -6,11 +6,11 @@ namespace UnityEngine
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<string, global::IAcceptor> m_commandMap;
+        protected IDictionary<string, IAcceptor> m_commandMap;
         protected static volatile IController m_instance;
         protected Controller()
         {
-            m_commandMap = new Dictionary<string, global::IAcceptor>();
+            m_commandMap = new Dictionary<string, IAcceptor>();
             InitializeController();
         }
         public static IController Instance
@@ -39,9 +39,9 @@ namespace UnityEngine
         /// </summary>
         /// <param name="notificationName"></param>
         /// <param name="newType"></param>
-        public virtual void RegisterCommand(Type newType)
+        public virtual void RegisterCommand<T>() where T : IAcceptor,new()
         {
-            var commandInstance = Activator.CreateInstance(newType) as global::IAcceptor;
+            var commandInstance = new T();
             var notificationName = commandInstance.Acceptor;
             if (!m_commandMap.ContainsKey(notificationName))
             {
@@ -59,21 +59,21 @@ namespace UnityEngine
         /// <summary>
         /// 注册泛型命令
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="P"></typeparam>
         /// <param name="notificationName"></param>
         /// <param name="newcommandFunc"></param>
-        public virtual void RegisterCommand<T>(Type newType)
+        public virtual void RegisterCommand<T,P>() where T : IAcceptor, new()
         {
-            var commandInstance = Activator.CreateInstance(newType) as global::IAcceptor;
+            var commandInstance = new T();
             var notificationName = commandInstance.Acceptor;
 
             if (!m_commandMap.ContainsKey(notificationName))
             {
-                IObserver<T> observer = new Observer<T>((notification) => {
+                IObserver<P> observer = new Observer<P>((notification) => {
                     global::IAcceptor type;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out type))
                     {
-                        if (type is ICommand<T>) (commandInstance as ICommand<T>).Execute(notification.Body);
+                        if (type is ICommand<P>) (commandInstance as ICommand<P>).Execute(notification.Body);
                         else if (type is ICommand) (commandInstance as ICommand).Execute();
                     }
                 }, this);

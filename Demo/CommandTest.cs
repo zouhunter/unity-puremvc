@@ -4,9 +4,9 @@ using UnityEngine.Events;
 using System.Collections.Generic;
 using System;
 
-public class MyCommand1 : ICommand
+public class MyCommand1 : Command
 {
-    public string Acceptor
+    public override string Acceptor
     {
         get
         {
@@ -14,14 +14,14 @@ public class MyCommand1 : ICommand
         }
     }
 
-    public void Execute()
+    public override void Execute()
     {
         MonoBehaviour.FindObjectOfType<Text>().text = "commond1";
     }
 }
-public class MyCommand2 : ICommand<string>
+public class MyCommand2 : Command<string>
 {
-    public string Acceptor
+    public override string Acceptor
     {
         get
         {
@@ -29,7 +29,7 @@ public class MyCommand2 : ICommand<string>
         }
     }
 
-    public void Execute(string value)
+    public override void Execute(string value)
     {
         MonoBehaviour.FindObjectOfType<Text>().text = "commond2";
     }

@@ -17,7 +17,7 @@ namespace UnityEngine
             m_proxyMap = new Dictionary<string, IAcceptor>();
         }
 
-        public void RegisterProxy(IAcceptor proxy)
+        public void RegisterProxy<T>(IProxy<T> proxy)
         {
             lock (m_syncRoot)
             {
@@ -83,15 +83,15 @@ namespace UnityEngine
                 return m_proxyMap.ContainsKey(proxyName);
             }
         }
-        public IAcceptor RemoveProxy(string proxyName)
+        public IProxy<T> RemoveProxy<T>(string proxyName)
         {
-            IAcceptor proxy = null;
+            IProxy<T> proxy = null;
 
             lock (m_syncRoot)
             {
                 if (m_proxyMap.ContainsKey(proxyName))
                 {
-                    proxy = RetrieveProxy<IAcceptor>(proxyName);
+                    proxy = RetrieveProxy<IProxy<T>>(proxyName);
                     m_proxyMap.Remove(proxyName);
                 }
             }

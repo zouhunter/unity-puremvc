@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace UnityEngine
 {
 
-    public interface IMediator<T> : global::IAcceptor
+    public interface IMediator<T> : IAcceptor
     {
         void HandleNotification(T notify);
     }
