@@ -5,6 +5,7 @@ public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
     protected static T instance = default(T);
     private static object lockHelper = new object();
     private static bool isQuit = false;
+    private static bool isOn = false;
     public static T Instence
     {
         get
@@ -17,6 +18,8 @@ public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
                     {
                         GameObject go = new GameObject(typeof(T).ToString());
                         instance = go.AddComponent<T>();
+                        Instence.LunchFrameWork();
+                        DontDestroyOnLoad(go);
                     }
                 }
             }
@@ -25,14 +28,14 @@ public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
     }
     public static void StartGame()
     {
-        if (instance == null)
-        {
-            Instence.LunchFrameWork();
-            DontDestroyOnLoad(Instence.gameObject);
+        if(!isOn){
+            instance = Instence;
+            isOn = true;
         }
     }
     protected virtual void OnApplicationQuit()
     {
+        isOn = false;
         isQuit = true;
     }
     protected abstract void LunchFrameWork();
