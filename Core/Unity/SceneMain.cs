@@ -327,7 +327,7 @@ namespace UnityEngine
         {
             _eventHold.AddDelegate(noti, even);
         }
-        public void RegisterEvent<T>(string noti, UnityAction<object> even)
+        public void RegisterEvent(string noti, UnityAction<object> even)
         {
             _eventHold.AddDelegate(noti, even);
         }
@@ -336,7 +336,7 @@ namespace UnityEngine
         {
             _eventHold.RemoveDelegate(noti, even);
         }
-        public void RemoveEvent<T>(string noti, UnityAction<object> even)
+        public void RemoveEvent(string noti, UnityAction<object> even)
         {
             _eventHold.RemoveDelegate(noti, even);
         }
