@@ -6,13 +6,13 @@ namespace UnityEngine
 
     public class View : IView
     {
-        protected IList<IAcceptor> m_mediatorMap;
+        protected IList<IAcceptors> m_mediatorMap;
         protected IDictionary<string, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
 
         protected View()
         {
-            m_mediatorMap = new List<global::IAcceptor>();
+            m_mediatorMap = new List<IAcceptors>();
             m_observerMap = new Dictionary<string, List<IObserverBase>>();
             InitializeView();
         }
@@ -158,7 +158,15 @@ namespace UnityEngine
             // Create Observer
             IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(x.Body), mediator);
 
-            RegisterObserver(mediator.Acceptor, observer);
+            if(mediator.Acceptor != null) RegisterObserver(mediator.Acceptor, observer);
+
+            if(mediator.Acceptors != null)
+            {
+                foreach (var acceptor in mediator.Acceptors)
+                {
+                    RegisterObserver(acceptor, observer);
+                }
+            }
         }
 
         /// <summary>
@@ -171,7 +179,7 @@ namespace UnityEngine
             return m_observerMap.ContainsKey(observerName);
         }
 
-        public void RemoveMediator(global::IAcceptor mediator)
+        public void RemoveMediator<T>(IMediator<T> mediator)
         {
             if (!m_mediatorMap.Contains(mediator)) return;
 

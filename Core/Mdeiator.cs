@@ -12,13 +12,18 @@ namespace UnityEngine
     {
         public virtual void OnEnable()
         {
-            Facade.RegisterMediator(this);
+            if (Acceptor != null || Acceptors != null)
+                Facade.RegisterMediator(this);
         }
-        public abstract string Acceptor { get; }
+        public virtual string Acceptor { get { return null; } }
+
+        public IList<string> Acceptors { get { return null; } }
+
         public abstract void HandleNotification(T notification);
         public virtual void OnDisable()
         {
-            Facade.RemoveMediator(this);
+            if (Acceptor != null || Acceptors != null)
+                Facade.RemoveMediator(this);
         }
     }
 }

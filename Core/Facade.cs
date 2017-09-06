@@ -74,11 +74,11 @@ namespace UnityEngine
             m_view.RemoveMediator(mediator);
         }
 
-        public static void RegisterCommand<T,P>() where T : IAcceptor, new()
+        public static void RegisterCommand<T,P>() where T : ICommand<P>, new()
         {
             m_controller.RegisterCommand<T,P>();
         }
-        public static void RegisterCommand<T>() where T : IAcceptor, new()
+        public static void RegisterCommand<T>() where T : ICommand, new()
         {
             m_controller.RegisterCommand<T>();
         }

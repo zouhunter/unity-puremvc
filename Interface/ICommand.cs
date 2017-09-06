@@ -4,7 +4,7 @@
     {
         void Execute();
     }
-    public interface ICommand<T> : IAcceptor
+    public interface ICommand<T> : ICommand
     {
         void Execute(T notify);
     }
