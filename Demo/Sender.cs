@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class Sender : MonoBehaviour {
+public class Sender : SceneMain<Sender> {
   
     void OnGUI()
     {
@@ -25,6 +25,10 @@ public class Sender : MonoBehaviour {
         if (GUILayout.Button("Proxy"))
         {
             Facade.RetrieveProxy<string>("haha", OnRetrived);
+        }
+        if (GUILayout.Button("Event"))
+        {
+            SceneMain.Current.InvokeEvents("event","事件触发创建的cube");
         }
     }
     void OnRetrived(string proxy)

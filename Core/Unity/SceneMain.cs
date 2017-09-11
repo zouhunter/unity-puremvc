@@ -8,11 +8,62 @@ namespace UnityEngine
 {
     public class SceneMain : MonoBehaviour
     {
+        public interface IEventItem
+        {
+            object Action { get; }
+            void Release();
+        }
+
+        public class EventItem : IEventItem
+        {
+            public UnityAction action;
+            public object Action {
+                get { return action; }
+            }
+            private static ObjectPool<EventItem> sPool = new ObjectPool<EventItem>(1, 1);
+
+            public static EventItem Allocate(UnityAction action)
+            {
+               var item = sPool.Allocate();
+                item.action = action;
+                return item;
+            }
+            public void Release()
+            {
+                sPool.Release(this);
+            }
+        }
+
+        public class EventItem<T> : IEventItem
+        {
+            public UnityAction<T> action;
+            public object Action
+            {
+                get { return action; }
+            }
+            private static ObjectPool<EventItem<T>> sPool = new ObjectPool<EventItem<T>>(1, 1);
+
+            public static EventItem<T> Allocate(UnityAction<T> action)
+            {
+                var item = sPool.Allocate();
+                item.action = action;
+                return item;
+            }
+            public void Release()
+            {
+                sPool.Release(this);
+            }
+        }
+
         public class EventHold
         {
+            protected IDictionary<string, List<IEventItem>> m_observerMap;
+
             public UnityEngine.Events.UnityAction<string> MessageNotHandled;
-            public Dictionary<string, UnityAction<object>> m_needHandle = new Dictionary<string, UnityAction<object>>();
-            public Dictionary<string, UnityAction> m_needHandle0 = new Dictionary<string, UnityAction>();
+            public EventHold()
+            {
+                m_observerMap = new Dictionary<string, List<IEventItem>>();
+            }
             public void NoMessageHandle(string rMessage)
             {
                 if (MessageNotHandled == null)
@@ -26,65 +77,32 @@ namespace UnityEngine
             }
 
             #region 注册注销事件
-            public void AddDelegate(string key, UnityAction<object> handle)
+            public void AddDelegate<T>(string key, UnityAction<T> handle)
             {
-                // First check if we know about the message type
-                if (!m_needHandle.ContainsKey(key))
-                {
-                    m_needHandle.Add(key, handle);
-                }
-                else
-                {
-                    m_needHandle[key] += handle;
-                }
+                if (handle == null) return;
+                EventItem<T> observer = EventItem<T>.Allocate(handle);
+                RegisterObserver(key, observer);
             }
             public void AddDelegate(string key, UnityAction handle)
             {
-                // First check if we know about the message type
-                if (!m_needHandle0.ContainsKey(key))
-                {
-                    m_needHandle0.Add(key, handle);
-                }
-                else
-                {
-                    m_needHandle0[key] += handle;
-                }
+                if (handle == null) return;
+                EventItem observer = EventItem.Allocate(handle);
+                RegisterObserver(key, observer);
             }
-            public bool RemoveDelegate(string key, UnityAction<object> handle)
+
+            public void RemoveDelegate<T>(string key, UnityAction<T> handle)
             {
-                if (m_needHandle.ContainsKey(key))
-                {
-                    m_needHandle[key] -=  handle;
-                    if (m_needHandle[key] == null)
-                    {
-                        m_needHandle.Remove(key);
-                        return false;
-                    }
-                }
-                return true;
+                ReMoveObserver(key, handle);
             }
-            public bool RemoveDelegate(string key, UnityAction handle)
+            public void RemoveDelegate(string key, UnityAction handle)
             {
-                if (m_needHandle0.ContainsKey(key))
-                {
-                    m_needHandle0[key] -= handle;
-                    if (m_needHandle0[key] == null)
-                    {
-                        m_needHandle0.Remove(key);
-                        return false;
-                    }
-                }
-                return true;
+                 ReMoveObserver(key, handle);
             }
             public void RemoveDelegates(string key)
             {
-                if (m_needHandle.ContainsKey(key))
+                if (m_observerMap.ContainsKey(key))
                 {
-                    m_needHandle.Remove(key);
-                }
-                if (m_needHandle0.ContainsKey(key))
-                {
-                    m_needHandle0.Remove(key);
+                    m_observerMap.Remove(key);
                 }
             }
             #endregion
@@ -92,39 +110,78 @@ namespace UnityEngine
             #region 触发事件
             public void NotifyObserver(string key)
             {
-                bool lReportMissingRecipient = true;
-
-                if (m_needHandle0.ContainsKey(key))
+                if (m_observerMap.ContainsKey(key))
                 {
-                    m_needHandle0[key].Invoke();
+                    var list = m_observerMap[key];
+                    foreach (var item in list)
+                    {
+                        if (item is EventItem)
+                        {
+                            (item as EventItem).action.Invoke();
+                        }
+                        else
+                        {
+                            NoMessageHandle(key);
+                        }
+                    }
 
-                    lReportMissingRecipient = false;
                 }
-
-                // If we were unable to send the message, we may need to report it
-                if (lReportMissingRecipient)
+                else
                 {
                     NoMessageHandle(key);
                 }
             }
             public void NotifyObserver<T>(string key, T value)
             {
-                bool lReportMissingRecipient = true;
-
-                if (m_needHandle.ContainsKey(key))
+                if (m_observerMap.ContainsKey(key))
                 {
-                    m_needHandle[key].Invoke(value);
-
-                    lReportMissingRecipient = false;
+                    var list = m_observerMap[key];
+                    var actions = list.FindAll(x => x is EventItem<T>);
+                    foreach (var item in actions){
+                        (item as EventItem<T>).action.Invoke(value);
+                    }
                 }
-
-                // If we were unable to send the message, we may need to report it
-                if (lReportMissingRecipient)
+                else
                 {
                     NoMessageHandle(key);
                 }
             }
             #endregion
+
+            private void RegisterObserver(string key, IEventItem observer)
+            {
+                if (m_observerMap.ContainsKey(key))
+                {
+                    if (!m_observerMap[key].Contains(observer))
+                    {
+                        m_observerMap[key].Add(observer);
+                    }
+                }
+                else
+                {
+                    m_observerMap.Add(key, new List<IEventItem>() { observer });
+                }
+            }
+
+            private bool ReMoveObserver(string key, object handle)
+            {
+                if (handle == null) return false;
+                if (m_observerMap.ContainsKey(key))
+                {
+                    var list = m_observerMap[key];
+                    var item = list.Find(x => object.Equals(x.Action,handle));
+                    if (item != null)
+                    {
+                        item.Release();
+                        list.Remove(item);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
         public class ObjectContainer
         {
@@ -327,7 +384,7 @@ namespace UnityEngine
         {
             _eventHold.AddDelegate(noti, even);
         }
-        public void RegisterEvent(string noti, UnityAction<object> even)
+        public void RegisterEvent<T>(string noti, UnityAction<T> even)
         {
             _eventHold.AddDelegate(noti, even);
         }
@@ -336,7 +393,7 @@ namespace UnityEngine
         {
             _eventHold.RemoveDelegate(noti, even);
         }
-        public void RemoveEvent(string noti, UnityAction<object> even)
+        public void RemoveEvent<T>(string noti, UnityAction<T> even)
         {
             _eventHold.RemoveDelegate(noti, even);
         }
@@ -352,7 +409,7 @@ namespace UnityEngine
         }
         public void InvokeEvents<T>(string noti, T data)
         {
-            _eventHold.NotifyObserver(noti, data);
+            _eventHold.NotifyObserver<T>(noti, data);
         }
         #endregion
 
