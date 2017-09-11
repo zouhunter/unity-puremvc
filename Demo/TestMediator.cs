@@ -6,11 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class TestMediator : Mediator<Color>
+public class TestMediator : Mediator<object>
 {
-    public override void HandleNotification(Color notification)
+    public override void HandleNotification(object notification)
     {
-        GetComponent<Image>().color = notification;
+        GetComponent<Image>().color = (Color)notification;
     }
 
     public override string Acceptor

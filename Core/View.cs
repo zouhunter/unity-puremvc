@@ -74,6 +74,12 @@ namespace UnityEngine
                     {
                         (observer as IObserver<T>).NotifyObserver(noti);
                     }
+                    else if (observer is IObserver<object>)
+                    {
+                        Notification<object> notify = Notification<object>.Allocate(noti.ObserverName, noti.Body, noti.Type);
+                        (observer as IObserver<object>).NotifyObserver(notify);
+                        notify.Release();
+                    }
                     else if (observer is IObserver)
                     {
                         (observer as IObserver).NotifyObserver(noti);
