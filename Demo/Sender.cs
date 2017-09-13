@@ -20,7 +20,7 @@ public class Sender : SceneMain<Sender> {
         }
         if (GUILayout.Button("Command2"))
         {
-            Facade.SendNotification(typeof(MyCommand2).ToString(), "哈哈");
+            Facade.SendNotification("command2", "哈哈");
         }
         if (GUILayout.Button("Proxy"))
         {

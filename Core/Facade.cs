@@ -74,13 +74,13 @@ namespace UnityEngine
             m_view.RemoveMediator(mediator);
         }
 
-        public static void RegisterCommand<T,P>() where T : ICommand<P>, new()
+        public static void RegisterCommand<T,P>(string observeName) where T : ICommand<P>, new()
         {
-            m_controller.RegisterCommand<T,P>();
+            m_controller.RegisterCommand<T,P>(observeName);
         }
-        public static void RegisterCommand<T>() where T : ICommand, new()
+        public static void RegisterCommand<T>(string observeName) where T : ICommand, new()
         {
-            m_controller.RegisterCommand<T>();
+            m_controller.RegisterCommand<T>(observeName);
         }
         public static void RemoveCommand(string observerName)
         {

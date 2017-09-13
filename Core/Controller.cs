@@ -6,11 +6,11 @@ namespace UnityEngine
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<string, ICommand> m_commandMap;
+        protected IDictionary<string, Func<ICommand>> m_commandMap;
         protected static volatile IController m_instance;
         protected Controller()
         {
-            m_commandMap = new Dictionary<string, ICommand>();
+            m_commandMap = new Dictionary<string, Func<ICommand>>();
             InitializeController();
         }
         public static IController Instance
@@ -39,29 +39,27 @@ namespace UnityEngine
         /// </summary>
         /// <param name="notificationName"></param>
         /// <param name="newType"></param>
-        public virtual void RegisterCommand<T>() where T : ICommand,new()
+        public virtual void RegisterCommand<T>(string observeName) where T : ICommand, new()
         {
-            var commandInstance = new T();
-
-            if (commandInstance.GetType().BaseType.IsGenericType)
+            if (typeof(T).BaseType.IsGenericType)
             {
-                Debug.Log("请注册" + commandInstance + "的参数类型" +
+                Debug.Log("请注册" + observeName + "的参数类型" +
                     "\n否则不会调用带参数的方法");
             }
 
-            var notificationName = commandInstance.Acceptor;
-            if (!m_commandMap.ContainsKey(notificationName))
+            if (!m_commandMap.ContainsKey(observeName))
             {
-                IObserver observer = new Observer((notification) => {
-                    ICommand acceptor;
+                IObserver observer = new Observer((notification) =>
+                {
+                    Func<ICommand> acceptor;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out acceptor))
                     {
-                        (commandInstance as ICommand).Execute();
+                        (acceptor()).Execute();
                     }
                 }, this);
-                m_view.RegisterObserver(notificationName, observer);
+                m_view.RegisterObserver(observeName, observer);
             }
-            m_commandMap[notificationName] = commandInstance;
+            m_commandMap[observeName] = new Func<ICommand>(()=>new T());
         }
         /// <summary>
         /// 注册泛型命令
@@ -69,24 +67,22 @@ namespace UnityEngine
         /// <typeparam name="P"></typeparam>
         /// <param name="notificationName"></param>
         /// <param name="newcommandFunc"></param>
-        public virtual void RegisterCommand<T,P>() where T : ICommand<P>, new()
+        public virtual void RegisterCommand<T, P>(string observeName) where T : ICommand<P>, new()
         {
-            var commandInstance = new T();
-            var notificationName = commandInstance.Acceptor;
-
-            if (!m_commandMap.ContainsKey(notificationName))
+            if (!m_commandMap.ContainsKey(observeName))
             {
-                IObserver<P> observer = new Observer<P>((notification) => {
-                    ICommand type;
-                    if (m_commandMap.TryGetValue(notification.ObserverName, out type))
+                IObserver<P> observer = new Observer<P>((notification) =>
+                {
+                   Func<ICommand> acceptor;
+                    if (m_commandMap.TryGetValue(notification.ObserverName, out acceptor))
                     {
-                         (commandInstance as ICommand<P>).Execute(notification.Body);
-                         (commandInstance as ICommand).Execute();
+                        (acceptor() as ICommand<P>).Execute(notification.Body);
+                        (acceptor() as ICommand).Execute();
                     }
                 }, this);
-                m_view.RegisterObserver(notificationName, observer);
+                m_view.RegisterObserver(observeName, observer);
             }
-            m_commandMap[notificationName] = commandInstance;
+            m_commandMap[observeName] = new Func<ICommand>(() => new T());
         }
 
         public virtual bool HasCommand(string notificationName)

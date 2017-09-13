@@ -1,6 +1,6 @@
 ﻿namespace UnityEngine
 {
-    public interface ICommand : IAcceptor
+    public interface ICommand 
     {
         void Execute();
     }

@@ -31,7 +31,7 @@ public class CommandTest : MonoBehaviour
 {
     private void Awake()
     {
-        Facade.RegisterCommand<MyCommand1>();
-        Facade.RegisterCommand<MyCommand2,string>();
+        Facade.RegisterCommand<MyCommand1>("command1");
+        Facade.RegisterCommand<MyCommand2,string>("command1");
     }
 }
