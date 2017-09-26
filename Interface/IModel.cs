@@ -7,7 +7,8 @@ namespace UnityEngine
     {
         void RegisterProxy<T>(IProxy<T> type);
         void CansaleRetrieve(string proxyName);
-        void RetrieveProxy<T>(string proxyName, UnityAction<T> retrieved);
+        void RetrieveData<T>(string proxyName, UnityAction<T> retrieved);
+        void RetrieveProxy<T>(string proxyName, UnityAction<IProxy<T>> retrieved);
         IProxy<T> RemoveProxy<T>(string proxyName);
         bool HasProxy(string proxyName);
     }

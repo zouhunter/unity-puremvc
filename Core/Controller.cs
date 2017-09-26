@@ -6,11 +6,11 @@ namespace UnityEngine
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<string, Func<ICommand>> m_commandMap;
+        protected IDictionary<string, Func<ICommandInternal>> m_commandMap;
         protected static volatile IController m_instance;
         protected Controller()
         {
-            m_commandMap = new Dictionary<string, Func<ICommand>>();
+            m_commandMap = new Dictionary<string, Func<ICommandInternal>>();
             InitializeController();
         }
         public static IController Instance
@@ -51,15 +51,24 @@ namespace UnityEngine
             {
                 IObserver observer = new Observer((notification) =>
                 {
-                    Func<ICommand> acceptor;
+                    Func<ICommandInternal> acceptor;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out acceptor))
                     {
-                        (acceptor()).Execute();
+                        var instence = acceptor();
+                        if (instence is ICommand) (acceptor() as ICommand).Execute();
+                        else
+                        {
+                            Debug.Log("命令" + observeName + "参数不正确，无法执行");
+                        }
                     }
                 }, this);
                 m_view.RegisterObserver(observeName, observer);
+                m_commandMap[observeName] = new Func<ICommandInternal>(() => new T());
             }
-            m_commandMap[observeName] = new Func<ICommand>(()=>new T());
+            else
+            {
+                Debug.Log("已经注册" + observeName + "的命令" + "->不能重复注册");
+            }
         }
         /// <summary>
         /// 注册泛型命令
@@ -73,16 +82,24 @@ namespace UnityEngine
             {
                 IObserver<P> observer = new Observer<P>((notification) =>
                 {
-                   Func<ICommand> acceptor;
+                    Func<ICommandInternal> acceptor;
                     if (m_commandMap.TryGetValue(notification.ObserverName, out acceptor))
                     {
-                        (acceptor() as ICommand<P>).Execute(notification.Body);
-                        (acceptor() as ICommand).Execute();
+                        var instence = acceptor();
+                        if (instence is ICommand<P>) (instence as ICommand<P>).Execute(notification.Body);
+                        else
+                        {
+                            Debug.Log("命令" + observeName + "参数不正确，无法执行");
+                        }
                     }
                 }, this);
                 m_view.RegisterObserver(observeName, observer);
+                m_commandMap[observeName] = new Func<ICommandInternal>(() => new T());
             }
-            m_commandMap[observeName] = new Func<ICommand>(() => new T());
+            else
+            {
+                Debug.Log("已经注册" + observeName + "的命令" + "->不能重复注册");
+            }
         }
 
         public virtual bool HasCommand(string notificationName)

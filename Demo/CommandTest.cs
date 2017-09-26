@@ -6,14 +6,6 @@ using System;
 
 public class MyCommand1 : Command
 {
-    public override string Acceptor
-    {
-        get
-        {
-            return "command1";
-        }
-    }
-
     public override void Execute()
     {
         MonoBehaviour.FindObjectOfType<Text>().text = "commond1";
@@ -32,6 +24,6 @@ public class CommandTest : MonoBehaviour
     private void Awake()
     {
         Facade.RegisterCommand<MyCommand1>("command1");
-        Facade.RegisterCommand<MyCommand2,string>("command1");
+        Facade.RegisterCommand<MyCommand2, string>(typeof(MyCommand2).ToString());
     }
 }

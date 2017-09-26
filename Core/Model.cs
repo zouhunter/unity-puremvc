@@ -30,14 +30,13 @@ namespace UnityEngine
                 waitRegisterEvents.Remove(proxy.Acceptor);
             }
         }
-
-        public void RetrieveProxy<T>(string proxyName, UnityAction<T> retrieved) 
+        public void RetrieveData<T>(string proxyName, UnityAction<T> retrieved)
         {
             if (retrieved == null) return;
 
             if (HasProxy(proxyName))
             {
-                retrieved(RetrieveProxy<T>(proxyName));
+                retrieved(RetrieveData<T>(proxyName));
             }
             else
             {
@@ -61,8 +60,38 @@ namespace UnityEngine
                 }
             }
         }
+        public void RetrieveProxy<T>(string proxyName, UnityAction<IProxy<T>> retrieved) 
+        {
+            if (retrieved == null) return;
 
-        T RetrieveProxy<T>(string proxyName)
+            if (HasProxy(proxyName))
+            {
+                retrieved(RetrieveProxy<T>(proxyName));
+            }
+            else
+            {
+                if (waitRegisterEvents.ContainsKey(proxyName))
+                {
+                    waitRegisterEvents[proxyName] += (x) => {
+                        if (x is IProxy<T>)
+                        {
+                            retrieved((x as IProxy<T>));
+                        }
+                    };
+                }
+                else
+                {
+                    waitRegisterEvents.Add(proxyName, (x) => {
+                        if (x is IProxy<T>)
+                        {
+                            retrieved((x as IProxy<T>));
+                        }
+                    });
+                }
+            }
+        }
+
+        T RetrieveData<T>(string proxyName)
         {
             lock (m_syncRoot)
             {
@@ -73,6 +102,20 @@ namespace UnityEngine
                 else
                 {
                     return default(T);
+                }
+            }
+        }
+        IProxy<T> RetrieveProxy<T>(string proxyName)
+        {
+            lock (m_syncRoot)
+            {
+                if (m_proxyMap.ContainsKey(proxyName) && m_proxyMap[proxyName] is IProxy<T>)
+                {
+                    return ((m_proxyMap[proxyName] as IProxy<T>));
+                }
+                else
+                {
+                    return default(IProxy<T>);
                 }
             }
         }
@@ -91,7 +134,7 @@ namespace UnityEngine
             {
                 if (m_proxyMap.ContainsKey(proxyName))
                 {
-                    proxy = RetrieveProxy<IProxy<T>>(proxyName);
+                    proxy = RetrieveProxy<T>(proxyName);
                     m_proxyMap.Remove(proxyName);
                 }
             }

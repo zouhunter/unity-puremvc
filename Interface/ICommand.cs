@@ -1,11 +1,15 @@
 ﻿namespace UnityEngine
 {
-    public interface ICommand 
+    public interface ICommandInternal
+    {
+    }
+
+    public interface ICommand: ICommandInternal
     {
         void Execute();
     }
-    public interface ICommand<T> : ICommand
+    public interface ICommand<T>: ICommandInternal
     {
-        void Execute(T notify);
+        void Execute(T data);
     }
 }

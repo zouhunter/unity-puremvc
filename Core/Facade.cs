@@ -2,6 +2,8 @@
 using System.Collections;
 using System;
 using UnityEngine.Events;
+using System.Collections.Generic;
+using ZLab.Model;
 
 namespace UnityEngine
 {
@@ -43,21 +45,24 @@ namespace UnityEngine
             m_model.RegisterProxy(prox);
         }
 
-        internal static void SendNotification(object loadSettngData)
-        {
-            throw new NotImplementedException();
-        }
-
         public static void CansaleRetrieve(string name)
         {
             m_model.CansaleRetrieve(name);
         }
 
-        public static void RetrieveProxy<T>(string name, UnityAction<T> onRetieved)
+        public static void RetrieveProxy<T>(string name, UnityAction<IProxy<T>> onRetieved)
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
-   
+        public static void RetrieveData<T>(string name, UnityAction<T> onRetieved)
+        {
+            m_model.RetrieveData<T>(name, onRetieved);
+        }
+        public static bool HaveProxy(string name)
+        {
+           return  m_model.HasProxy(name);
+        }
+
         public static IProxy<T> RemoveProxy<T>(string name)
         {
             return m_model.RemoveProxy<T>(name);

@@ -24,7 +24,11 @@ public class Sender : SceneMain<Sender> {
         }
         if (GUILayout.Button("Proxy"))
         {
-            Facade.RetrieveProxy<string>("haha", OnRetrived);
+            Facade.RetrieveData<string>("haha", OnRetrived);
+        }
+        if (GUILayout.Button("Event"))
+        {
+            SceneMain.Current.InvokeEvents("event","事件触发创建的cube");
         }
         if (GUILayout.Button("Event"))
         {
