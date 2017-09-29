@@ -3,7 +3,6 @@ using System.Collections;
 using System;
 using UnityEngine.Events;
 using System.Collections.Generic;
-using ZLab.Model;
 
 namespace UnityEngine
 {
@@ -50,6 +49,10 @@ namespace UnityEngine
             m_model.CansaleRetrieve(name);
         }
 
+        public static void RetrieveProxy<P,T>(string name, UnityAction<P> onRetieved) where P:IProxy<T>
+        {
+            m_model.RetrieveProxy<P,T>(name, onRetieved);
+        }
         public static void RetrieveProxy<T>(string name, UnityAction<IProxy<T>> onRetieved)
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
@@ -63,9 +66,9 @@ namespace UnityEngine
            return  m_model.HasProxy(name);
         }
 
-        public static IProxy<T> RemoveProxy<T>(string name)
+        public static void RemoveProxy<T>(string name)
         {
-            return m_model.RemoveProxy<T>(name);
+            m_model.RemoveProxy<T>(name);
         }
 
 

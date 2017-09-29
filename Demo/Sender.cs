@@ -25,6 +25,7 @@ public class Sender : SceneMain<Sender> {
         if (GUILayout.Button("Proxy"))
         {
             Facade.RetrieveData<string>("haha", OnRetrived);
+            Facade.RetrieveProxy<MyProxy,string>("hehe", OnRetrived);
         }
         if (GUILayout.Button("Event"))
         {
@@ -35,5 +36,9 @@ public class Sender : SceneMain<Sender> {
     {
         Debug.Log(proxy);
         FindObjectOfType<Text>().text = proxy;
+    }
+    void OnRetrived(MyProxy myProxy)
+    {
+        Debug.Log(myProxy.Data);
     }
 }

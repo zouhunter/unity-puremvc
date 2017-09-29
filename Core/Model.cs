@@ -42,7 +42,8 @@ namespace UnityEngine
             {
                 if (waitRegisterEvents.ContainsKey(proxyName))
                 {
-                    waitRegisterEvents[proxyName] += (x) => {
+                    waitRegisterEvents[proxyName] += (x) =>
+                    {
                         if (x is IProxy<T>)
                         {
                             retrieved((x as IProxy<T>).Data);
@@ -51,7 +52,8 @@ namespace UnityEngine
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) => {
+                    waitRegisterEvents.Add(proxyName, (x) =>
+                    {
                         if (x is IProxy<T>)
                         {
                             retrieved((x as IProxy<T>).Data);
@@ -66,25 +68,68 @@ namespace UnityEngine
 
             if (HasProxy(proxyName))
             {
-                retrieved(RetrieveProxy<T>(proxyName));
+                var proxy = RetrieveProxy<T>(proxyName);
+                if (proxy is IProxy<T>)
+                {
+                    retrieved((IProxy<T>)proxy);
+                }
             }
             else
             {
                 if (waitRegisterEvents.ContainsKey(proxyName))
                 {
-                    waitRegisterEvents[proxyName] += (x) => {
+                    waitRegisterEvents[proxyName] += (x) =>
+                    {
                         if (x is IProxy<T>)
                         {
-                            retrieved((x as IProxy<T>));
+                            retrieved(((IProxy<T>)x));
                         }
                     };
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) => {
+                    waitRegisterEvents.Add(proxyName, (x) =>
+                    {
                         if (x is IProxy<T>)
                         {
-                            retrieved((x as IProxy<T>));
+                            retrieved(((IProxy<T>)x));
+                        }
+                    });
+                }
+            }
+        }
+
+        public void RetrieveProxy<P, T>(string proxyName, UnityAction<P> retrieved) where P : IProxy<T>
+        {
+            if (retrieved == null) return;
+
+            if (HasProxy(proxyName))
+            {
+                var proxy = RetrieveProxy<T>(proxyName);
+                if (proxy is P)
+                {
+                    retrieved((P)proxy);
+                }
+            }
+            else
+            {
+                if (waitRegisterEvents.ContainsKey(proxyName))
+                {
+                    waitRegisterEvents[proxyName] += (x) =>
+                    {
+                        if (x is P)
+                        {
+                            retrieved(((P)x));
+                        }
+                    };
+                }
+                else
+                {
+                    waitRegisterEvents.Add(proxyName, (x) =>
+                    {
+                        if (x is P)
+                        {
+                            retrieved(((P)x));
                         }
                     });
                 }
@@ -97,7 +142,7 @@ namespace UnityEngine
             {
                 if (m_proxyMap.ContainsKey(proxyName) && m_proxyMap[proxyName] is IProxy<T>)
                 {
-                   return ((m_proxyMap[proxyName] as IProxy<T>).Data);
+                    return ((m_proxyMap[proxyName] as IProxy<T>).Data);
                 }
                 else
                 {
@@ -126,20 +171,15 @@ namespace UnityEngine
                 return m_proxyMap.ContainsKey(proxyName);
             }
         }
-        public IProxy<T> RemoveProxy<T>(string proxyName)
+        public void RemoveProxy<T>(string proxyName)
         {
-            IProxy<T> proxy = null;
-
             lock (m_syncRoot)
             {
                 if (m_proxyMap.ContainsKey(proxyName))
                 {
-                    proxy = RetrieveProxy<T>(proxyName);
                     m_proxyMap.Remove(proxyName);
                 }
             }
-
-            return proxy;
         }
 
         public void CansaleRetrieve(string proxyName)

@@ -9,7 +9,8 @@ namespace UnityEngine
         void CansaleRetrieve(string proxyName);
         void RetrieveData<T>(string proxyName, UnityAction<T> retrieved);
         void RetrieveProxy<T>(string proxyName, UnityAction<IProxy<T>> retrieved);
-        IProxy<T> RemoveProxy<T>(string proxyName);
+        void RetrieveProxy<P,T>(string proxyName, UnityAction<P> retrieved) where P:IProxy<T>;
+        void RemoveProxy<T>(string proxyName);
         bool HasProxy(string proxyName);
     }
 }
