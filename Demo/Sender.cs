@@ -12,24 +12,24 @@ public class Sender : SceneMain<Sender> {
     {
         if (GUILayout.Button("Mediator"))
         {
-            Facade.SendNotification<Color>("color", Color.red);
+            Facade.SendNotification<Color>(ObserverName.FirstMediator, Color.red);
         }
         if (GUILayout.Button("Command1"))
         {
-            Facade.SendNotification("command1");
+            Facade.SendNotification(ObserverName.Command1);
         }
         if (GUILayout.Button("Command2"))
         {
-            Facade.SendNotification(typeof(MyCommand2).ToString(), "哈哈");
+            Facade.SendNotification(ObserverName.Command2, "哈哈");
         }
         if (GUILayout.Button("Proxy"))
         {
-            Facade.RetrieveData<string>("haha", OnRetrived);
-            Facade.RetrieveProxy<MyProxy,string>("hehe", OnRetrived);
+            Facade.RetrieveData<string>(ProxyName.FirstProxy, OnRetrived);
+            Facade.RetrieveProxy<MyProxy,string>(ProxyName.SecondProxy, OnRetrived);
         }
         if (GUILayout.Button("Event"))
         {
-            SceneMain.Current.InvokeEvents("event","事件触发创建的cube");
+            SceneMain.Current.InvokeEvents(EventKey.FirstEvent,"事件触发创建的cube");
         }
     }
     void OnRetrived(string proxy)

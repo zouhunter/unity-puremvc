@@ -17,7 +17,7 @@ public class TestMediator : Mediator<object>
     {
         get
         {
-            return  "color" ;
+            return ObserverName.FirstMediator;
         }
     }
 }

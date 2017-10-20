@@ -10,10 +10,11 @@ public class ProxyTest : MonoBehaviour {
 
     void Start()
     {
-        var proxy = new Proxy<string>("haha");
+        Debug.Log(ProxyName.FirstProxy);
+        var proxy = new Proxy<string>(ProxyName.FirstProxy);
         proxy.Data = "dddddddddd";
         Facade.RegisterProxy(proxy);
-        Facade.RegisterProxy(new MyProxy("hehe", "bbbbbb"));
+        Facade.RegisterProxy(new MyProxy(ProxyName.SecondProxy, "bbbbbb"));
     }
   
 }
