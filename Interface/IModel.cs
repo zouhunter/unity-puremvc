@@ -10,7 +10,7 @@ namespace UnityEngine
         void RetrieveData<T>(string proxyName, UnityAction<T> retrieved);
         void RetrieveProxy<T>(string proxyName, UnityAction<IProxy<T>> retrieved);
         void RetrieveProxy<P,T>(string proxyName, UnityAction<P> retrieved) where P:IProxy<T>;
-        void RemoveProxy<T>(string proxyName);
+        void RemoveProxy(string proxyName);
         bool HasProxy(string proxyName);
     }
 }

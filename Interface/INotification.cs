@@ -11,8 +11,6 @@ namespace UnityEngine
     }
     public interface INotification<T>: INotification
     {
-     
-  
         T Body { get; set; }
     }
 }

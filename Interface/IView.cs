@@ -13,5 +13,7 @@ namespace UnityEngine
 
         void RegisterMediator<T>(IMediator<T> mediator);
         void RemoveMediator<T>(IMediator<T> mediator);
+        void RegisterMediator(IMediator mediator);
+        void RemoveMediator(IMediator mediator);
     }
 }

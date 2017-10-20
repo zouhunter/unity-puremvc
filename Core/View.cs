@@ -174,7 +174,35 @@ namespace UnityEngine
                 }
             }
         }
+        public void RegisterMediator(IMediator mediator)
+        {
+            if (m_mediatorMap.Contains(mediator)) return;
 
+            // Register the Mediator for retrieval by name
+            m_mediatorMap.Add(mediator);
+
+            // Create Observer
+            IObserver observer = new Observer((x) => (mediator as IMediator).HandleNotification(), mediator);
+
+            if (mediator.Acceptor != null) RegisterObserver(mediator.Acceptor, observer);
+
+            if (mediator.Acceptors != null)
+            {
+                foreach (var acceptor in mediator.Acceptors)
+                {
+                    RegisterObserver(acceptor, observer);
+                }
+            }
+        }
+
+        public void RemoveMediator(IMediator mediator)
+        {
+            if (!m_mediatorMap.Contains(mediator)) return;
+
+            RemoveObserver(mediator.Acceptor, mediator);
+
+            m_mediatorMap.Remove(mediator);
+        }
         /// <summary>
         /// 是否含有观察者
         /// </summary>
@@ -193,5 +221,7 @@ namespace UnityEngine
 
             m_mediatorMap.Remove(mediator);
         }
+
+     
     }
 }

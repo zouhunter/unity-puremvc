@@ -66,9 +66,9 @@ namespace UnityEngine
            return  m_model.HasProxy(name);
         }
 
-        public static void RemoveProxy<T>(string name)
+        public static void RemoveProxy(string name)
         {
-            m_model.RemoveProxy<T>(name);
+            m_model.RemoveProxy(name);
         }
 
 
@@ -76,7 +76,14 @@ namespace UnityEngine
         {
             m_view.RegisterMediator(mediator);
         }
-
+        public static void RegisterMediator(IMediator mediator)
+        {
+            m_view.RegisterMediator(mediator);
+        }
+        public static void RemoveMediator(IMediator mediator)
+        {
+            m_view.RemoveMediator(mediator);
+        }
         public static void RemoveMediator<T>(IMediator<T> mediator)
         {
             m_view.RemoveMediator(mediator);
@@ -86,6 +93,7 @@ namespace UnityEngine
         {
             m_controller.RegisterCommand<T,P>(observeName);
         }
+
         public static void RegisterCommand<T>(string observeName) where T : ICommand, new()
         {
             m_controller.RegisterCommand<T>(observeName);

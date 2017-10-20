@@ -171,7 +171,7 @@ namespace UnityEngine
                 return m_proxyMap.ContainsKey(proxyName);
             }
         }
-        public void RemoveProxy<T>(string proxyName)
+        public void RemoveProxy(string proxyName)
         {
             lock (m_syncRoot)
             {
