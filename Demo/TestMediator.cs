@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 public class TestMediator : Mediator<object>
 {
-    public override void HandleNotification(object notification)
+    public override void HandleNotification(string observerName,object notification)
     {
         GetComponent<Image>().color = (Color)notification;
     }

@@ -4,11 +4,11 @@ namespace UnityEngine
 {
     public interface IMediator: IAcceptors
     {
-        void HandleNotification();
+        void HandleNotification(string observerName);
     }
 
     public interface IMediator<T> : IAcceptors
     {
-        void HandleNotification(T notify);
+        void HandleNotification(string observerName,T notify);
     }
 }

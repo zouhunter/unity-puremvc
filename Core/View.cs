@@ -162,14 +162,18 @@ namespace UnityEngine
             m_mediatorMap.Add(mediator);
 
             // Create Observer
-            IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(x.Body), mediator);
 
-            if(mediator.Acceptor != null) RegisterObserver(mediator.Acceptor, observer);
+            if (mediator.Acceptor != null)
+            {
+                IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(mediator.Acceptor, x.Body), mediator);
+                RegisterObserver(mediator.Acceptor, observer);
+            }
 
             if(mediator.Acceptors != null)
             {
                 foreach (var acceptor in mediator.Acceptors)
                 {
+                    IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(acceptor, x.Body), mediator);
                     RegisterObserver(acceptor, observer);
                 }
             }
@@ -182,14 +186,18 @@ namespace UnityEngine
             m_mediatorMap.Add(mediator);
 
             // Create Observer
-            IObserver observer = new Observer((x) => (mediator as IMediator).HandleNotification(), mediator);
 
-            if (mediator.Acceptor != null) RegisterObserver(mediator.Acceptor, observer);
+            if (mediator.Acceptor != null)
+            {
+                IObserver observer = new Observer((x) => (mediator as IMediator).HandleNotification(mediator.Acceptor), mediator);
+                RegisterObserver(mediator.Acceptor, observer);
+            }
 
             if (mediator.Acceptors != null)
             {
                 foreach (var acceptor in mediator.Acceptors)
                 {
+                    IObserver observer = new Observer((x) => (mediator as IMediator).HandleNotification(acceptor), mediator);
                     RegisterObserver(acceptor, observer);
                 }
             }

@@ -29,7 +29,7 @@ namespace UnityEngine
 
         public virtual IList<string> Acceptors { get { return null; } }
 
-        public abstract void HandleNotification();
+        public abstract void HandleNotification(string observerName);
     }
     public abstract class Mediator<T> : MonoBehaviour, IMediator<T>
     {
@@ -53,7 +53,7 @@ namespace UnityEngine
 
         public virtual IList<string> Acceptors { get { return null; } }
 
-        public abstract void HandleNotification(T notification);
+        public abstract void HandleNotification(string observerName, T notification);
      
     }
 }
