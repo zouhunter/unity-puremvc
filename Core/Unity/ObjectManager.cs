@@ -19,6 +19,7 @@ namespace UnityEngine.Internal
             base.Awake();
             _transform = transform;
         }
+
         /// <summary>
         /// 用于创建静止的物体，指定父级、坐标
         /// </summary>
@@ -101,17 +102,15 @@ namespace UnityEngine.Internal
             return null;
         }
 
-        GameObject CreateAGameObject(GameObject pfb, Transform parent, bool world, bool resetLocalPositon, bool resetLocalScale)
+        public GameObject CreateAGameObject(GameObject pfb, Transform parent, bool world, bool resetLocalPositon = true, bool resetLocalScale = false)
         {
             GameObject currentGo = Instantiate(pfb);
             currentGo.name = pfb.name;
             currentGo.transform.SetParent(parent, world);
-            if (resetLocalPositon)
-            {
+            if (resetLocalPositon){
                 currentGo.transform.localPosition = Vector3.zero;
             }
-            if (resetLocalScale)
-            {
+            if (resetLocalScale) {
                 currentGo.transform.localScale = Vector3.one;
             }
             return currentGo;
