@@ -4,8 +4,7 @@ using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-namespace UnityEngine
-{
+
     public class SceneMain : MonoBehaviour
     {
         public interface IEventItem
@@ -59,7 +58,7 @@ namespace UnityEngine
         {
             protected IDictionary<string, List<IEventItem>> m_observerMap;
 
-            public UnityEngine.Events.UnityAction<string> MessageNotHandled;
+            public UnityAction<string> MessageNotHandled { get; set; }
             public EventHold()
             {
                 m_observerMap = new Dictionary<string, List<IEventItem>>();
@@ -133,6 +132,10 @@ namespace UnityEngine
             }
             public void NotifyObserver<T>(string key, T value)
             {
+                if(key == EventKeys.AppendScore)
+                {
+                    Debug.Log("[AppendScore]" + m_observerMap.ContainsKey(key) + ":" + m_observerMap[key].Count);
+                }
                 if (m_observerMap.ContainsKey(key))
                 {
                     var list = m_observerMap[key];
@@ -183,6 +186,7 @@ namespace UnityEngine
                 return true;
             }
         }
+
         public class ObjectContainer
         {
             private MonoBehaviour _holder;
@@ -439,4 +443,3 @@ namespace UnityEngine
         }
     }
 
-}

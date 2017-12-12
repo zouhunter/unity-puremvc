@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 
 
-namespace UnityEngine
-{
     public abstract class Mediator : MonoBehaviour, IMediator
     {
         private Mediator m_meditor;
@@ -54,6 +52,5 @@ namespace UnityEngine
         public virtual IList<string> Acceptors { get { return null; } }
 
         public abstract void HandleNotification(string observerName, T notification);
-     
+
     }
-}

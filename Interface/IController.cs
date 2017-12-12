@@ -1,6 +1,5 @@
 ﻿using System;
-namespace UnityEngine
-{
+
 
     public interface IController
     {
@@ -9,4 +8,3 @@ namespace UnityEngine
         void RemoveCommand(string commandName);
         bool HasCommand(string commandName);
     }
-}

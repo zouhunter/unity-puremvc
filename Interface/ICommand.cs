@@ -1,5 +1,4 @@
-﻿namespace UnityEngine
-{
+﻿
     public interface ICommandInternal
     {
     }
@@ -12,4 +11,3 @@
     {
         void Execute(T data);
     }
-}

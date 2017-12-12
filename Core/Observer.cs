@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System;
 
-namespace UnityEngine
-{
     public class Observer<T> : IObserver<T>
     {
         public Observer(UnityEngine.Events.UnityAction<INotification<T>> notifyMethod, object notifyContext)
@@ -47,4 +45,3 @@ namespace UnityEngine
         public object NotifyContext { get; set; }
 
     }
-}

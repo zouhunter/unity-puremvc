@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UnityEngine
-{
-
     public class View : IView
     {
         protected IList<IAcceptors> m_mediatorMap;
@@ -232,4 +229,3 @@ namespace UnityEngine
 
      
     }
-}

@@ -1,6 +1,5 @@
 ﻿using System;
-namespace UnityEngine
-{
+
     public interface INotification
     {
         string ObserverName { get; set; }
@@ -13,4 +12,3 @@ namespace UnityEngine
     {
         T Body { get; set; }
     }
-}

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UnityEngine
-{
+
     /// <summary>
     /// 只应当在注册时被引用
     /// </summary>
@@ -16,4 +15,3 @@ namespace UnityEngine
     {
         public abstract void Execute(T notification);
     }
-}

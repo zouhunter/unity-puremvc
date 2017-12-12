@@ -1,8 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UnityEngine
-{
 
     public class Proxy<T> : IProxy<T>
     {
@@ -27,4 +25,3 @@ namespace UnityEngine
             }
         }
     }
-}

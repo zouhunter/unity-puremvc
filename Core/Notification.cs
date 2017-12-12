@@ -3,8 +3,7 @@ using System.Collections;
 using System;
 
 
-namespace UnityEngine
-{
+
 
     public class Notification<T> : INotification<T>
     {
@@ -75,4 +74,3 @@ namespace UnityEngine
             }
         }
     }
-}

@@ -1,6 +1,6 @@
 ﻿using System;
-namespace UnityEngine
-{
+using UnityEngine;
+using UnityEngine.Events;
     public interface IObserverBase
     {
         object NotifyContext { get; set; }
@@ -8,14 +8,13 @@ namespace UnityEngine
     }
     public interface IObserver<T>:IObserverBase
     {
-        Events.UnityAction<INotification<T>> NotifyMethod { get; set; }
+        UnityAction<INotification<T>> NotifyMethod { get; set; }
         void NotifyObserver(INotification<T> notification);
 
     }
     public interface IObserver : IObserverBase
     {
-        Events.UnityAction<INotification> NotifyMethod { get; set; }
+        UnityAction<INotification> NotifyMethod { get; set; }
         void NotifyObserver(INotification notification);
         
     }
-}

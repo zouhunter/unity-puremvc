@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine.Events;
-namespace UnityEngine
-{
+
 
     public interface IModel
     {
@@ -13,4 +12,3 @@ namespace UnityEngine
         void RemoveProxy(string proxyName);
         bool HasProxy(string proxyName);
     }
-}

@@ -1,6 +1,5 @@
 ﻿using System;
-namespace UnityEngine
-{
+
 
     public interface INotifier
     {
@@ -8,4 +7,3 @@ namespace UnityEngine
         void SendNotification<T>(string notificationName, T body);
         void SendNotification<T>(string notificationName, T body, Type type);
     }
-}

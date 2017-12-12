@@ -1,10 +1,6 @@
 ﻿using UnityEngine.Events;
 using System.Collections.Generic;
 
-
-namespace UnityEngine
-{
-
     public class Model : IModel
     {
         public static volatile IModel Instance = new Model();
@@ -190,4 +186,3 @@ namespace UnityEngine
             }
         }
     }
-}

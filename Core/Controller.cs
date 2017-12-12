@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UnityEngine
-{
+using  UnityEngine;
     public class Controller : IController
     {
         protected IView m_view;
@@ -115,4 +114,3 @@ namespace UnityEngine
             }
         }
     }
-}

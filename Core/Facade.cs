@@ -4,8 +4,8 @@ using System;
 using UnityEngine.Events;
 using System.Collections.Generic;
 
-namespace UnityEngine
-{
+using  UnityEngine;
+
 
     public static class Facade
     {
@@ -134,4 +134,3 @@ namespace UnityEngine
 
     }
 
-}

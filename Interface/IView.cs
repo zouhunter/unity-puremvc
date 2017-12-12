@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine.Events;
-namespace UnityEngine
-{
+
 
     public interface IView
     {
@@ -16,4 +15,3 @@ namespace UnityEngine
         void RegisterMediator(IMediator mediator);
         void RemoveMediator(IMediator mediator);
     }
-}
