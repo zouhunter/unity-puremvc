@@ -1,56 +1,56 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
+public abstract class Mediator : MonoBehaviour, IMediator
+{
+    private Mediator m_meditor;
 
-    public abstract class Mediator : MonoBehaviour, IMediator
+    public virtual void Awake()
     {
-        private Mediator m_meditor;
-        public virtual void Awake()
+        m_meditor = this;
+        if (Acceptor != null || Acceptors != null)
         {
-            m_meditor = this;
-            if (Acceptor != null || Acceptors != null)
-            {
-                Facade.RegisterMediator(this);
-            }
+            Facade.RegisterMediator(this);
         }
-        public virtual void OnDestroy()
-        {
-            if (Acceptor != null || Acceptors != null)
-            {
-                if (m_meditor) Facade.RemoveMediator(this);
-            }
-        }
-        public virtual string Acceptor { get { return null; } }
-
-        public virtual IList<string> Acceptors { get { return null; } }
-
-        public abstract void HandleNotification(string observerName);
     }
-    public abstract class Mediator<T> : MonoBehaviour, IMediator<T>
+
+    public virtual void OnDestroy()
     {
-        private Mediator<T> m_meditor;
-        public virtual void Awake()
+        if (Acceptor != null || Acceptors != null)
         {
-            m_meditor = this;
-            if (Acceptor != null || Acceptors != null)
-            {
-                Facade.RegisterMediator(this);
-            }
+            if (m_meditor) Facade.RemoveMediator(this);
         }
-        public virtual void OnDestroy()
-        {
-            if (Acceptor != null || Acceptors != null)
-            {
-               if(m_meditor) Facade.RemoveMediator(this);
-            }
-        }
-        public virtual string Acceptor { get { return null; } }
-
-        public virtual IList<string> Acceptors { get { return null; } }
-
-        public abstract void HandleNotification(string observerName, T notification);
-
     }
+
+    public virtual string Acceptor { get { return null; } }
+
+    public virtual IList<string> Acceptors { get { return null; } }
+
+    public abstract void HandleNotification(string observerName);
+}
+
+public abstract class Mediator<T> : MonoBehaviour, IMediator<T>
+{
+    private Mediator<T> m_meditor;
+    public virtual void Awake()
+    {
+        m_meditor = this;
+        if (Acceptor != null || Acceptors != null)
+        {
+            Facade.RegisterMediator(this);
+        }
+    }
+    public virtual void OnDestroy()
+    {
+        if (Acceptor != null || Acceptors != null)
+        {
+            if (m_meditor) Facade.RemoveMediator(this);
+        }
+    }
+    public virtual string Acceptor { get { return null; } }
+
+    public virtual IList<string> Acceptors { get { return null; } }
+
+    public abstract void HandleNotification(string observerName, T notification);
+
+}

@@ -1,11 +1,5 @@
 ﻿using System;
-using UnityEngine.UI;
-using UnityEngine.Events;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngineInternal;
 using UnityEngine;
-
 public abstract class ManagerTemp<T> : MonoBehaviour where T : MonoBehaviour
 {
     protected static T instance = default(T);
@@ -31,6 +25,7 @@ public abstract class ManagerTemp<T> : MonoBehaviour where T : MonoBehaviour
         }
         return instance;
     }
+
     protected virtual void Awake()
     {
         if (instance == null)

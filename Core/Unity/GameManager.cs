@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
 {

@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
+﻿using UnityEngine.UI;
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 

@@ -1,14 +1,12 @@
 ﻿using System;
-using UnityEngine.Events;
 
-
-    public interface IModel
-    {
-        void RegisterProxy<T>(IProxy<T> type);
-        void CansaleRetrieve(string proxyName);
-        void RetrieveData<T>(string proxyName, UnityAction<T> retrieved);
-        void RetrieveProxy<T>(string proxyName, UnityAction<IProxy<T>> retrieved);
-        void RetrieveProxy<P,T>(string proxyName, UnityAction<P> retrieved) where P:IProxy<T>;
-        void RemoveProxy(string proxyName);
-        bool HasProxy(string proxyName);
-    }
+public interface IModel
+{
+    void RegisterProxy<T>(IProxy<T> type);
+    void CansaleRetrieve(string proxyName);
+    void RetrieveData<T>(string proxyName, Action<T> retrieved);
+    void RetrieveProxy<T>(string proxyName, Action<IProxy<T>> retrieved);
+    void RetrieveProxy<P, T>(string proxyName, Action<P> retrieved) where P : IProxy<T>;
+    void RemoveProxy(string proxyName);
+    bool HasProxy(string proxyName);
+}

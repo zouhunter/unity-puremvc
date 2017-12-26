@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿
 using UnityEngine.UI;
-using UnityEngine.Events;
+using UnityEngine;
 using System.Collections.Generic;
+
 public class MyProxy : Proxy<string>
 {
     public MyProxy(string proxyName, string data) : base(proxyName, data) { }
