@@ -2,6 +2,8 @@
 
 
 
+namespace PureMVC
+{
     public interface IView
     {
         void RegisterObserver(string observerName, IObserverBase observer);
@@ -15,3 +17,4 @@
         void RegisterMediator(IMediator mediator);
         void RemoveMediator(IMediator mediator);
     }
+}

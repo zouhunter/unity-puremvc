@@ -1,15 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
-using UnityEngine.UI;
-
-using System.Collections;
-using System.Collections.Generic;
-
-public interface IAcceptor
+namespace PureMVC
 {
-    string Acceptor { get; }
-}
-public interface IAcceptors: IAcceptor
-{
-    IList<string> Acceptors { get; }
+    public interface IAcceptor
+    {
+        string Acceptor { get; }
+    }
+    public interface IAcceptors : IAcceptor
+    {
+        IList<string> Acceptors { get; }
+    }
 }

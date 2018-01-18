@@ -1,5 +1,7 @@
 ﻿using System;
 
+namespace PureMVC
+{
     public interface INotification
     {
         string ObserverName { get; set; }
@@ -8,7 +10,8 @@
         bool Destroy { get; set; }
         bool IsUsing { get; set; }
     }
-    public interface INotification<T>: INotification
+    public interface INotification<T> : INotification
     {
         T Body { get; set; }
     }
+}

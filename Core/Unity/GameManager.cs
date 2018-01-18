@@ -1,43 +1,46 @@
 ﻿
 using UnityEngine;
-
-public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
+namespace PureMVC
 {
-    protected static T instance = default(T);
-    private static object lockHelper = new object();
-    private static bool isQuit = false;
-    private static bool isOn = false;
-    public static T Instence
+    public abstract class GameManager<T> : MonoBehaviour where T : GameManager<T>
     {
-        get
+        protected static T instance = default(T);
+        private static object lockHelper = new object();
+        private static bool isQuit = false;
+        private static bool isOn = false;
+        public static T Instence
         {
-            if (instance == null)
+            get
             {
-                lock (lockHelper)
+                if (instance == null)
                 {
-                    if (instance == null && !isQuit)
+                    lock (lockHelper)
                     {
-                        GameObject go = new GameObject(typeof(T).ToString());
-                        instance = go.AddComponent<T>();
-                        Instence.LunchFrameWork();
-                        DontDestroyOnLoad(go);
+                        if (instance == null && !isQuit)
+                        {
+                            GameObject go = new GameObject(typeof(T).ToString());
+                            instance = go.AddComponent<T>();
+                            Instence.LunchFrameWork();
+                            DontDestroyOnLoad(go);
+                        }
                     }
                 }
+                return instance;
             }
-            return instance;
         }
-    }
-    public static void StartGame()
-    {
-        if(!isOn){
-            instance = Instence;
-            isOn = true;
+        public static void StartGame()
+        {
+            if (!isOn)
+            {
+                instance = Instence;
+                isOn = true;
+            }
         }
+        protected virtual void OnApplicationQuit()
+        {
+            isOn = false;
+            isQuit = true;
+        }
+        protected abstract void LunchFrameWork();
     }
-    protected virtual void OnApplicationQuit()
-    {
-        isOn = false;
-        isQuit = true;
-    }
-    protected abstract void LunchFrameWork();
 }

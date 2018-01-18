@@ -2,6 +2,8 @@
 
 
 
+namespace PureMVC
+{
     public class Proxy<T> : IProxy<T>
     {
         public Proxy(string name)
@@ -25,3 +27,4 @@
             }
         }
     }
+}

@@ -1,12 +1,14 @@
 ﻿using System;
 
 
+namespace PureMVC
+{
     public interface IObserverBase
     {
         object NotifyContext { get; set; }
         bool CompareNotifyContext(object obj);
     }
-    public interface IObserver<T>:IObserverBase
+    public interface IObserver<T> : IObserverBase
     {
         Action<INotification<T>> NotifyMethod { get; set; }
         void NotifyObserver(INotification<T> notification);
@@ -16,5 +18,6 @@
     {
         Action<INotification> NotifyMethod { get; set; }
         void NotifyObserver(INotification notification);
-        
+
     }
+}

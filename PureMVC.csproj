@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DB8F2F15-ED45-4AD8-8148-8CD6D8D3BAC5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PureMVC</RootNamespace>
+    <AssemblyName>PureMVC</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>bin\Release\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Command.cs" />
+    <Compile Include="Core\Controller.cs" />
+    <Compile Include="Core\Facade.cs" />
+    <Compile Include="Core\Mdeiator.cs" />
+    <Compile Include="Core\Model.cs" />
+    <Compile Include="Core\Notification.cs" />
+    <Compile Include="Core\ObjectPool.cs" />
+    <Compile Include="Core\Observer.cs" />
+    <Compile Include="Core\Proxy.cs" />
+    <Compile Include="Core\Unity\AutoSetProperties.cs" />
+    <Compile Include="Core\Unity\GameManager.cs" />
+    <Compile Include="Core\Unity\ManagerTemp.cs" />
+    <Compile Include="Core\Unity\ObjectManager.cs" />
+    <Compile Include="Core\Unity\SceneMain.cs" />
+    <Compile Include="Core\View.cs" />
+    <Compile Include="Interface\IAcceptor.cs" />
+    <Compile Include="Interface\ICommand.cs" />
+    <Compile Include="Interface\IController.cs" />
+    <Compile Include="Interface\IMediator.cs" />
+    <Compile Include="Interface\IModel.cs" />
+    <Compile Include="Interface\INotification.cs" />
+    <Compile Include="Interface\INotifier.cs" />
+    <Compile Include="Interface\IObserver.cs" />
+    <Compile Include="Interface\IProxy.cs" />
+    <Compile Include="Interface\IView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

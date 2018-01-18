@@ -4,7 +4,8 @@ using System;
 
 
 
-
+namespace PureMVC
+{
     public class Notification<T> : INotification<T>
     {
         public T Body { get; set; }
@@ -74,3 +75,4 @@ using System;
             }
         }
     }
+}

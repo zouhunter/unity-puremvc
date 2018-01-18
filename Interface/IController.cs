@@ -1,5 +1,7 @@
 ﻿using System;
 
+namespace PureMVC
+{
 
     public interface IController
     {
@@ -8,3 +10,4 @@
         void RemoveCommand(string commandName);
         bool HasCommand(string commandName);
     }
+}

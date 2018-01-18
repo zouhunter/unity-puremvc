@@ -1,53 +1,56 @@
 ﻿using System;
 using UnityEngine;
-public abstract class ManagerTemp<T> : MonoBehaviour where T : MonoBehaviour
+namespace PureMVC
 {
-    protected static T instance = default(T);
-    private static object lockHelper = new object();
-    private static bool isQuit = false;
-    public static T Instance
+    public abstract class ManagerTemp<T> : MonoBehaviour where T : MonoBehaviour
     {
-        get { return GetInstance(); }
-    }
-    public static T GetInstance()
-    {
-        if (instance == null)
+        protected static T instance = default(T);
+        private static object lockHelper = new object();
+        private static bool isQuit = false;
+        public static T Instance
         {
-            lock (lockHelper)
+            get { return GetInstance(); }
+        }
+        public static T GetInstance()
+        {
+            if (instance == null)
             {
-                if (instance == null && !isQuit)
+                lock (lockHelper)
                 {
-                    GameObject go = new GameObject(typeof(T).ToString());
-                    instance = go.AddComponent<T>();
-                    Debug.Log("[启动]" + go.name);
+                    if (instance == null && !isQuit)
+                    {
+                        GameObject go = new GameObject(typeof(T).ToString());
+                        instance = go.AddComponent<T>();
+                        Debug.Log("[启动]" + go.name);
+                    }
                 }
             }
+            return instance;
         }
-        return instance;
-    }
 
-    protected virtual void Awake()
-    {
-        if (instance == null)
+        protected virtual void Awake()
         {
-            instance = GetComponent<T>();
+            if (instance == null)
+            {
+                instance = GetComponent<T>();
+            }
+            if (!DestroyOnLoad)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
         }
-        if (!DestroyOnLoad)
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-    }
-    protected virtual bool DestroyOnLoad { get { return true; } }
+        protected virtual bool DestroyOnLoad { get { return true; } }
 
-    void OnApplicationQuit()
-    {
-        isQuit = true;
-    }
-    protected virtual void OnDestroy()
-    {
-        if (instance == this)
+        void OnApplicationQuit()
         {
-            instance = null;
+            isQuit = true;
+        }
+        protected virtual void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance = null;
+            }
         }
     }
 }
