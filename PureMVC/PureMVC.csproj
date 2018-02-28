@@ -34,7 +34,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine">
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Release\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -48,7 +49,7 @@
     <Compile Include="Core\ObjectPool.cs" />
     <Compile Include="Core\Observer.cs" />
     <Compile Include="Core\Proxy.cs" />
-    <Compile Include="Core\Unity\AutoSetProperties.cs" />
+    <Compile Include="Core\Unity\NameUtil.cs" />
     <Compile Include="Core\Unity\GameManager.cs" />
     <Compile Include="Core\Unity\ManagerTemp.cs" />
     <Compile Include="Core\Unity\ObjectManager.cs" />
