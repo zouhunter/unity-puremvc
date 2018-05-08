@@ -37,12 +37,15 @@ namespace PureMVC
         {
             m_model.RegisterProxy(prox);
         }
-
         public static void CansaleRetrieve(string name)
         {
             m_model.CansaleRetrieve(name);
         }
 
+        public static P RetrieveProxy<P, T>(string name) where P : IProxy<T>
+        {
+            return m_model.RetrieveProxy<P, T>(name);
+        }
         public static void RetrieveProxy<P, T>(string name, Action<P> onRetieved) where P : IProxy<T>
         {
             m_model.RetrieveProxy<P, T>(name, onRetieved);
@@ -51,9 +54,17 @@ namespace PureMVC
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
+        public static IProxy<T> RetrieveProxy<T>(string name)
+        {
+            return m_model.RetrieveProxy<T>(name);
+        }
         public static void RetrieveData<T>(string name, Action<T> onRetieved)
         {
             m_model.RetrieveData<T>(name, onRetieved);
+        }
+        public static T RetrieveData<T>(string name)
+        {
+            return m_model.RetrieveData<T>(name);
         }
         public static bool HaveProxy(string name)
         {

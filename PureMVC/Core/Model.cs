@@ -103,11 +103,7 @@ namespace PureMVC
 
             if (HasProxy(proxyName))
             {
-                var proxy = RetrieveProxy<T>(proxyName);
-                if (proxy is P)
-                {
-                    retrieved((P)proxy);
-                }
+                retrieved(RetrieveProxy<P, T>(proxyName));
             }
             else
             {
@@ -134,7 +130,20 @@ namespace PureMVC
             }
         }
 
-        T RetrieveData<T>(string proxyName)
+        public P RetrieveProxy<P, T>(string proxyName) where P : IProxy<T>
+        {
+            lock (m_syncRoot)
+            {
+                var proxy = RetrieveProxy<T>(proxyName);
+                if (proxy is P)
+                {
+                    return (P)proxy;
+                }
+                return default(P);
+            }
+        }
+
+        public T RetrieveData<T>(string proxyName)
         {
             lock (m_syncRoot)
             {
@@ -148,7 +157,7 @@ namespace PureMVC
                 }
             }
         }
-        IProxy<T> RetrieveProxy<T>(string proxyName)
+        public IProxy<T> RetrieveProxy<T>(string proxyName)
         {
             lock (m_syncRoot)
             {
