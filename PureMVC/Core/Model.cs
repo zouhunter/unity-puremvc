@@ -8,11 +8,9 @@ namespace PureMVC
         protected readonly object m_syncRoot = new object();
         protected IDictionary<string, IAcceptor> m_proxyMap;
         protected Dictionary<string, Action<IAcceptor>> waitRegisterEvents = new Dictionary<string, Action<IAcceptor>>();
-        protected Facade facade;
 
-        internal Model(Facade facade)
+        internal Model()
         {
-            this.facade = facade;
             m_proxyMap = new Dictionary<string, IAcceptor>();
         }
 

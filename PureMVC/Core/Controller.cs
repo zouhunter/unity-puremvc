@@ -6,11 +6,9 @@ namespace PureMVC
     {
         protected IView m_view;
         protected IDictionary<string, Func<ICommandInternal>> m_commandMap;
-        protected Facade facade;
 
-        internal Controller(Facade facade, IView view)
+        internal Controller(IView view)
         {
-            this.facade = facade;
             m_view = view;
             m_commandMap = new Dictionary<string, Func<ICommandInternal>>();
         }

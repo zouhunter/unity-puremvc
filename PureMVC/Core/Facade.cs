@@ -21,15 +21,15 @@ namespace PureMVC
 
         protected virtual IController InitializeController(IView view)
         {
-            return new Controller(this,view);
+            return new Controller(view);
         }
         protected virtual IModel InitializeModel()
         {
-            return new Model(this);
+            return new Model();
         }
         protected virtual IView InitializeView()
         {
-            return new View(this);
+            return new View();
         }
 
         #region 访问三大层的

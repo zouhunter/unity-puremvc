@@ -28,7 +28,7 @@ namespace PureMVC
                 return instance;
             }
         }
-        public virtual void StartGame()
+        internal void StartGame()
         {
             if(!isOn)
             {
