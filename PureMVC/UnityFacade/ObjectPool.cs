@@ -1,21 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using System.Reflection;
+
 namespace PureMVC
 {
-    public class ObjectManager : ManagerTemp<ObjectManager>
+    public class ObjectPool
     {
         private float cachingTime = 30f;
         //创建对象池字典
         private Dictionary<string, List<GameObject>> poolObjs = new Dictionary<string, List<GameObject>>();
         private Dictionary<GameObject, float> poolObjTimes = new Dictionary<GameObject, float>();
-        private Transform _transform;
+        private Transform poolRoot;
         private Coroutine updateCo;
+        private MonoBehaviour holder;
 
-        protected override void Awake()
+        public ObjectPool(MonoBehaviour holder)
         {
-            base.Awake();
-            _transform = transform;
+            this.holder = holder;
+            poolRoot = new GameObject("poolRoot").transform;
+            poolRoot.SetParent(holder.transform);
         }
         /// <summary>
         /// 用于创建静止的物体，指定父级、坐标
@@ -101,7 +105,7 @@ namespace PureMVC
 
         public GameObject CreateAGameObject(GameObject pfb, Transform parent, bool world, bool resetLocalPositon = false, bool resetLocalScale = false)
         {
-            GameObject currentGo = Instantiate(pfb);
+            GameObject currentGo = Object.Instantiate(pfb);
             currentGo.name = pfb.name;
             currentGo.transform.SetParent(parent, world);
             if (resetLocalPositon)
@@ -117,7 +121,7 @@ namespace PureMVC
 
         public void SavePoolObject(GameObject go, bool world = false)
         {
-            if (go == null || _transform == null) return;
+            if (go == null || poolRoot == null) return;
             if (poolObjs.ContainsKey(go.name))
             {
                 var currList = poolObjs[go.name];
@@ -131,20 +135,20 @@ namespace PureMVC
                 poolObjs.Add(go.name, new List<GameObject> { go });
             }
 
-            go.transform.SetParent(transform, world);
+            go.transform.SetParent(poolRoot, world);
             go.SetActive(false);
             poolObjTimes.Add(go, Time.time);
             if (updateCo == null)
             {
-                updateCo = StartCoroutine(UpdatePool());
+                updateCo = holder.StartCoroutine(UpdatePool());
             }
         }
 
         public void ClearAllObject()
         {
-            foreach (Transform item in transform)
+            foreach (Transform item in poolRoot)
             {
-                Destroy(item.gameObject);
+                Object.Destroy(item.gameObject);
             }
 
             if (poolObjs != null)
@@ -195,7 +199,7 @@ namespace PureMVC
                     {
                         poolObjs.Remove(destroyGo.name);
                     }
-                    Destroy(destroyGo);
+                    Object.Destroy(destroyGo);
                     Resources.UnloadUnusedAssets();
                     poolObjTimes.Remove(destroyGo);
                 }

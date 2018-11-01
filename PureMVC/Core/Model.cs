@@ -5,13 +5,14 @@ namespace PureMVC
 {
     public class Model : IModel
     {
-        public static volatile IModel Instance = new Model();
+        protected readonly object m_syncRoot = new object();
+        protected IDictionary<string, IAcceptor> m_proxyMap;
+        protected Dictionary<string, Action<IAcceptor>> waitRegisterEvents = new Dictionary<string, Action<IAcceptor>>();
+        protected Facade facade;
 
-        readonly object m_syncRoot = new object();
-        IDictionary<string, IAcceptor> m_proxyMap;
-        Dictionary<string, Action<IAcceptor>> waitRegisterEvents = new Dictionary<string, Action<IAcceptor>>();
-        private Model()
+        internal Model(Facade facade)
         {
+            this.facade = facade;
             m_proxyMap = new Dictionary<string, IAcceptor>();
         }
 

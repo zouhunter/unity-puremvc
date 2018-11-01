@@ -8,29 +8,14 @@ namespace PureMVC
         protected IList<IAcceptors> m_mediatorMap;
         protected IDictionary<string, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
-
-        protected View()
+        protected Facade facade;
+        internal View(Facade facade)
         {
+            this.facade = facade;
             m_mediatorMap = new List<IAcceptors>();
             m_observerMap = new Dictionary<string, List<IObserverBase>>();
-            InitializeView();
         }
-        public static IView Instance
-        {
-            get
-            {
-                if (m_instance == null)
-                {
-                    if (m_instance == null) m_instance = new View();
-                }
 
-                return m_instance;
-            }
-        }
-        protected virtual void InitializeView()
-        {
-
-        }
         /// <summary>
         /// 注册成为观察者
         /// </summary>

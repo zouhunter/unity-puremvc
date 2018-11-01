@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System;
 namespace PureMVC
 {
-    public class SceneMain : MonoBehaviour
+    public abstract class SceneManage : MonoBehaviour
     {
         public interface IEventItem
         {
@@ -186,202 +186,24 @@ namespace PureMVC
             }
         }
 
-        public class ObjectContainer
-        {
-            private MonoBehaviour _holder;
-            private Transform _transform;
-            private float cachingTime = 30f;
-            //创建对象池字典
-            private Dictionary<string, List<GameObject>> poolObjs = new Dictionary<string, List<GameObject>>();
+        protected static SceneManage _abstruct;
 
-            private Dictionary<GameObject, float> poolObjTimes = new Dictionary<GameObject, float>();
-
-            private List<GameObject> destroyedObjects = new List<GameObject>();
-
-            private Coroutine updateCo;
-
-            public ObjectContainer(MonoBehaviour holder)
-            {
-                this._holder = holder;
-                this._transform = holder.GetComponent<Transform>();// _transform;
-            }
-
-            /// <summary>
-            /// 用于创建静止的物体，指定父级、坐标
-            /// </summary>
-            /// <returns></returns>
-            public GameObject GetPoolObject(GameObject pfb, Transform parent, bool world, bool resetLocalPosition = true, bool resetLocalScale = false, bool activepfb = false)
-            {
-                pfb.SetActive(true);
-                GameObject currGo;
-                ////Debug.Log(pfb.name);
-                //如果有预制体为名字的对象小池
-                if (poolObjs.ContainsKey(pfb.name))
-                {
-                    List<GameObject> currentList = null;
-                    currentList = poolObjs[pfb.name];
-                    destroyedObjects.Clear();
-                    //遍历每数组，得到一个隐藏的对象
-                    for (int i = 0; i < currentList.Count; i++)
-                    {
-                        if (currentList[i] == null)
-                        {
-                            destroyedObjects.Add(currentList[i]);
-                            continue;
-                        }
-                        if (!currentList[i].activeSelf)
-                        {
-                            currentList[i].SetActive(true);
-                            currentList[i].transform.SetParent(parent, world);
-                            if (resetLocalPosition)
-                            {
-                                currentList[i].transform.localPosition = Vector3.zero;
-                            }
-                            if (resetLocalScale)
-                            {
-                                currentList[i].transform.localScale = Vector3.one;
-                            }
-                            pfb.SetActive(activepfb);
-                            poolObjTimes.Remove(currentList[i]);
-                            return currentList[i];
-                        }
-                    }
-                    //当没有隐藏对象时，创建一个并返回
-                    currGo = CreateAGameObject(pfb, parent, world, resetLocalPosition, resetLocalScale);
-                    currentList.Add(currGo);
-                    pfb.SetActive(activepfb);
-                    return currGo;
-                }
-                currGo = CreateAGameObject(pfb, parent, world, resetLocalPosition, resetLocalScale);
-                //如果没有对象小池
-                poolObjs.Add(currGo.name, new List<GameObject>() { currGo });
-                pfb.SetActive(activepfb);
-                return currGo;
-            }
-
-            public GameObject GetPoolObject(string pfbName, Transform parent, bool world, bool resetLocalPosition = true, bool resetLocalScale = false)
-            {
-                if (poolObjs.ContainsKey(pfbName))
-                {
-                    List<GameObject> currentList = null;
-                    currentList = poolObjs[pfbName];
-                    //遍历每数组，得到一个隐藏的对象
-                    for (int i = 0; i < currentList.Count; i++)
-                    {
-                        if (!currentList[i].activeSelf)
-                        {
-                            currentList[i].SetActive(true);
-                            currentList[i].transform.SetParent(parent, world);
-                            if (resetLocalPosition)
-                            {
-                                currentList[i].transform.localPosition = Vector3.zero;
-                            }
-                            if (resetLocalScale)
-                            {
-                                currentList[i].transform.localScale = Vector3.one;
-                            }
-                            poolObjTimes.Remove(currentList[i]);
-                            return currentList[i];
-                        }
-                    }
-                }
-
-                return null;
-            }
-
-            GameObject CreateAGameObject(GameObject pfb, Transform parent, bool world, bool resetLocalPositon, bool resetLocalScale)
-            {
-                GameObject currentGo = GameObject.Instantiate(pfb);
-                currentGo.name = pfb.name;
-                currentGo.transform.SetParent(parent, world);
-                if (resetLocalPositon)
-                {
-                    currentGo.transform.localPosition = Vector3.zero;
-                }
-                if (resetLocalScale)
-                {
-                    currentGo.transform.localScale = Vector3.one;
-                }
-                return currentGo;
-            }
-
-            IEnumerator UpdatePool()
-            {
-                while (true)
-                {
-                    if (poolObjTimes.Count == 0)
-                    {
-                        updateCo = null;
-                        yield break;
-                    }
-
-                    GameObject destroyGo = null;
-                    foreach (var pair in poolObjTimes)
-                    {
-                        if (Time.time - pair.Value > cachingTime)
-                        {
-                            destroyGo = pair.Key;
-                            break;
-                        }
-                    }
-
-                    if (destroyGo != null)
-                    {
-                        var currList = poolObjs[destroyGo.name];
-                        currList.Remove(destroyGo);
-                        if (currList.Count == 0)
-                        {
-                            poolObjs.Remove(destroyGo.name);
-                        }
-                        poolObjTimes.Remove(destroyGo);
-                    }
-
-                    yield return new WaitForSeconds(0.5f);
-                }
-            }
-
-            public void SavePoolObject(GameObject go, bool world = false)
-            {
-                if (poolObjs.ContainsKey(go.name))
-                {
-                    var currList = poolObjs[go.name];
-                    if (!currList.Contains(go))
-                    {
-                        currList.Add(go);
-                    }
-                }
-                else
-                {
-                    poolObjs.Add(go.name, new List<GameObject> { go });
-                }
-
-                go.transform.SetParent(_transform, world);
-                go.SetActive(false);
-                poolObjTimes.Add(go, Time.time);
-                if (updateCo == null)
-                {
-                    updateCo = _holder.StartCoroutine(UpdatePool());
-                }
-            }
-        }
-
-        protected static SceneMain _abstruct;
-
-        public static SceneMain Current
+        public static SceneManage Current
         {
             get
             {
                 return _abstruct;
             }
         }
-        private ObjectContainer _container;
+        private ObjectPool _container;
         private EventHold _eventHold;
         protected virtual void Awake()
         {
             _eventHold = new EventHold();
-            _container = new ObjectContainer(this);
+            _container = new ObjectPool(this);
             _abstruct = this;
         }
+
         #region 访问事件系统
         public void RegisterEvent(string noti, UnityAction even)
         {
@@ -406,11 +228,11 @@ namespace PureMVC
             _eventHold.RemoveDelegates(noti);
         }
 
-        public void InvokeEvents(string noti)
+        public void Notify(string noti)
         {
             _eventHold.NotifyObserver(noti);
         }
-        public void InvokeEvents<T>(string noti, T data)
+        public void Notify<T>(string noti, T data)
         {
             _eventHold.NotifyObserver<T>(noti, data);
         }
@@ -432,13 +254,13 @@ namespace PureMVC
         #endregion
     }
 
-    public class SceneMain<T> : SceneMain where T : SceneMain
+    public abstract class SceneManage<S> : SceneManage where S:App<S>
     {
-        public new static T Current { get { return (T)_abstruct; } }
-
         protected override void Awake()
         {
             base.Awake();
+            var app = App<S>.Instence;
+            app.StartGame();
         }
     }
 

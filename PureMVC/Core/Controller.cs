@@ -6,33 +6,15 @@ namespace PureMVC
     {
         protected IView m_view;
         protected IDictionary<string, Func<ICommandInternal>> m_commandMap;
-        protected static volatile IController m_instance;
-        protected Controller()
+        protected Facade facade;
+
+        internal Controller(Facade facade, IView view)
         {
+            this.facade = facade;
+            m_view = view;
             m_commandMap = new Dictionary<string, Func<ICommandInternal>>();
-            InitializeController();
-        }
-        public static IController Instance
-        {
-            get
-            {
-                if (m_instance == null)
-                {
-                    if (m_instance == null) m_instance = new Controller();
-                }
-
-                return m_instance;
-            }
         }
 
-        static Controller()
-        {
-
-        }
-        protected virtual void InitializeController()
-        {
-            m_view = View.Instance;
-        }
         /// <summary>
         /// 注册非泛型命令
         /// </summary>

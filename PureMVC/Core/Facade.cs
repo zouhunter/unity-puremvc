@@ -1,109 +1,109 @@
 ﻿using System;
 namespace PureMVC
 {
-    public static class Facade
+    public class Facade
     {
-        static IModel m_model;
-        static IView m_view;
-        static IController m_controller;
-        static Facade()
+        protected IModel m_model;
+        protected IView m_view;
+        protected IController m_controller;
+
+        public Facade()
         {
             InitializeFacade();
         }
-        private static void InitializeFacade()
+
+        protected virtual void InitializeFacade()
         {
+            m_view = InitializeView();
+            InitializeController(m_view);
             InitializeModel();
-            InitializeController();
-            InitializeView();
         }
-        private static void InitializeController()
+
+        protected virtual IController InitializeController(IView view)
         {
-            if (m_controller != null) return;
-            m_controller = Controller.Instance;
+            return new Controller(this,view);
         }
-        private static void InitializeModel()
+        protected virtual IModel InitializeModel()
         {
-            if (m_model != null) return;
-            m_model = Model.Instance;
+            return new Model(this);
         }
-        private static void InitializeView()
+        protected virtual IView InitializeView()
         {
-            if (m_view != null) return;
-            m_view = View.Instance;
+            return new View(this);
         }
 
         #region 访问三大层的
-        public static void RegisterProxy<T>(IProxy<T> prox)
+        public void RegisterProxy<T>(IProxy<T> prox)
         {
             m_model.RegisterProxy(prox);
         }
-        public static void CansaleRetrieve(string name)
+        public void CansaleRetrieve(string name)
         {
             m_model.CansaleRetrieve(name);
         }
 
-        public static P RetrieveProxy<P, T>(string name) where P : IProxy<T>
+        public P RetrieveProxy<P, T>(string name) where P : IProxy<T>
         {
             return m_model.RetrieveProxy<P, T>(name);
         }
-        public static void RetrieveProxy<P, T>(string name, Action<P> onRetieved) where P : IProxy<T>
+        public void RetrieveProxy<P, T>(string name, Action<P> onRetieved) where P : IProxy<T>
         {
             m_model.RetrieveProxy<P, T>(name, onRetieved);
         }
-        public static void RetrieveProxy<T>(string name, Action<IProxy<T>> onRetieved)
+        public void RetrieveProxy<T>(string name, Action<IProxy<T>> onRetieved)
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
-        public static IProxy<T> RetrieveProxy<T>(string name)
+        public IProxy<T> RetrieveProxy<T>(string name)
         {
             return m_model.RetrieveProxy<T>(name);
         }
-        public static void RetrieveData<T>(string name, Action<T> onRetieved)
+        public void RetrieveData<T>(string name, Action<T> onRetieved)
         {
             m_model.RetrieveData<T>(name, onRetieved);
         }
-        public static T RetrieveData<T>(string name)
+        public T RetrieveData<T>(string name)
         {
             return m_model.RetrieveData<T>(name);
         }
-        public static bool HaveProxy(string name)
+        public bool HaveProxy(string name)
         {
             return m_model.HasProxy(name);
         }
 
-        public static void RemoveProxy(string name)
+        public void RemoveProxy(string name)
         {
             m_model.RemoveProxy(name);
         }
 
 
-        public static void RegisterMediator<T>(IMediator<T> mediator)
+        public void RegisterMediator<T>(IMediator<T> mediator)
         {
             m_view.RegisterMediator(mediator);
         }
-        public static void RegisterMediator(IMediator mediator)
+        public void RegisterMediator(IMediator mediator)
         {
             m_view.RegisterMediator(mediator);
         }
-        public static void RemoveMediator(IMediator mediator)
+        public void RemoveMediator(IMediator mediator)
         {
             m_view.RemoveMediator(mediator);
         }
-        public static void RemoveMediator<T>(IMediator<T> mediator)
+        public void RemoveMediator<T>(IMediator<T> mediator)
         {
             m_view.RemoveMediator(mediator);
         }
 
-        public static void RegisterCommand<T, P>(string observeName) where T : ICommand<P>, new()
+        public void RegisterCommand<T, P>(string observeName) where T : ICommand<P>, new()
         {
             m_controller.RegisterCommand<T, P>(observeName);
         }
 
-        public static void RegisterCommand<T>(string observeName) where T : ICommand, new()
+        public void RegisterCommand<T>(string observeName) where T : ICommand, new()
         {
             m_controller.RegisterCommand<T>(observeName);
         }
-        public static void RemoveCommand(string observerName)
+        public void RemoveCommand(string observerName)
         {
             m_controller.RemoveCommand(observerName);
         }
@@ -112,7 +112,7 @@ namespace PureMVC
         /// 通知观察者
         /// </summary>
         /// <param name="notification"></param>
-        private static void NotifyObservers<T>(INotification<T> notification)
+        protected void NotifyObservers<T>(INotification<T> notification)
         {
             if (m_view.HasObserver(notification.ObserverName))
             {
@@ -120,15 +120,15 @@ namespace PureMVC
             }
         }
 
-        public static void SendNotification(string observeName)
+        public void SendNotification(string observeName)
         {
             SendNotification<object>(observeName, null, null);
         }
-        public static void SendNotification<T>(string observeName, T body)
+        public void SendNotification<T>(string observeName, T body)
         {
             SendNotification<T>(observeName, body, null);
         }
-        public static void SendNotification<T>(string observeName, T body, Type type)
+        public void SendNotification<T>(string observeName, T body, Type type)
         {
             Notification<T> notify = Notification<T>.Allocate(observeName, body, type);
             NotifyObservers(notify);
