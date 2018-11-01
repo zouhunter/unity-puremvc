@@ -147,12 +147,6 @@ namespace PureMVC
 
             // Create Observer
 
-            if (mediator.Acceptor != null)
-            {
-                IObserver<T> observer = new Observer<T>((x) => (mediator as IMediator<T>).HandleNotification(mediator.Acceptor, x.Body), mediator);
-                RegisterObserver(mediator.Acceptor, observer);
-            }
-
             if (mediator.Acceptors != null)
             {
                 foreach (var acceptor in mediator.Acceptors)
@@ -171,12 +165,6 @@ namespace PureMVC
 
             // Create Observer
 
-            if (mediator.Acceptor != null)
-            {
-                IObserver observer = new Observer((x) => (mediator as IMediator).HandleNotification(mediator.Acceptor), mediator);
-                RegisterObserver(mediator.Acceptor, observer);
-            }
-
             if (mediator.Acceptors != null)
             {
                 foreach (var acceptor in mediator.Acceptors)
@@ -191,7 +179,10 @@ namespace PureMVC
         {
             if (!m_mediatorMap.Contains(mediator)) return;
 
-            RemoveObserver(mediator.Acceptor, mediator);
+            foreach (var Acceptor in mediator.Acceptors)
+            {
+                RemoveObserver(Acceptor, mediator);
+            }
 
             m_mediatorMap.Remove(mediator);
         }
@@ -209,11 +200,12 @@ namespace PureMVC
         {
             if (!m_mediatorMap.Contains(mediator)) return;
 
-            RemoveObserver(mediator.Acceptor, mediator);
+            foreach (var Acceptor in mediator.Acceptors)
+            {
+                RemoveObserver(Acceptor, mediator);
+            }
 
             m_mediatorMap.Remove(mediator);
         }
-
-
     }
 }

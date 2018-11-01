@@ -15,8 +15,8 @@ namespace PureMVC
         protected virtual void InitializeFacade()
         {
             m_view = InitializeView();
-            InitializeController(m_view);
-            InitializeModel();
+            m_controller = InitializeController(m_view);
+            m_model = InitializeModel();
         }
 
         protected virtual IController InitializeController(IView view)
@@ -36,6 +36,17 @@ namespace PureMVC
         public void RegisterProxy<T>(IProxy<T> prox)
         {
             m_model.RegisterProxy(prox);
+        }
+        public void RegisterProxy<T>(string proxyName, T data)
+        {
+            if(m_model.HasProxy(proxyName))
+            {
+                m_model.RetrieveProxy<T>(proxyName).Data = data;
+            }
+            else
+            {
+                m_model.RegisterProxy(new Proxy<T>(proxyName,data));
+            }
         }
         public void CansaleRetrieve(string name)
         {
@@ -70,13 +81,10 @@ namespace PureMVC
         {
             return m_model.HasProxy(name);
         }
-
         public void RemoveProxy(string name)
         {
             m_model.RemoveProxy(name);
         }
-
-
         public void RegisterMediator<T>(IMediator<T> mediator)
         {
             m_view.RegisterMediator(mediator);

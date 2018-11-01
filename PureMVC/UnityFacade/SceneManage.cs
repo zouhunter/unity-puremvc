@@ -254,13 +254,18 @@ namespace PureMVC
         #endregion
     }
 
-    public abstract class SceneManage<S> : SceneManage where S:App<S>
+    public abstract class SceneManage<S> : SceneManage where S:App<S>,new()
     {
         protected override void Awake()
         {
             base.Awake();
             var app = App<S>.Instence;
             app.StartGame();
+        }
+
+        protected virtual void OnApplicationQuit()
+        {
+            App<S>.Instence.OnApplicationQuit(); 
         }
     }
 

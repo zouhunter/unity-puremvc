@@ -6,7 +6,7 @@ namespace PureMVC
     {
         string Acceptor { get; }
     }
-    public interface IAcceptors : IAcceptor
+    public interface IAcceptors 
     {
         IList<string> Acceptors { get; }
     }

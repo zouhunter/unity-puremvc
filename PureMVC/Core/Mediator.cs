@@ -4,19 +4,23 @@ namespace PureMVC
 {
     public abstract class Mediator : IMediator
     {
-        public virtual string Acceptor { get { return null; } }
-
-        public virtual IList<string> Acceptors { get { return null; } }
-
+        protected string[] acceptors;
+        public Mediator(params string[] acceptors)
+        {
+            this.acceptors = acceptors;
+        }
+        public virtual IList<string> Acceptors { get { return acceptors; } }
         public abstract void HandleNotification(string observerName);
     }
 
     public abstract class Mediator<T>: IMediator<T>
     {
-        public virtual string Acceptor { get { return null; } }
-
-        public virtual IList<string> Acceptors { get { return null; } }
-
+        protected string[] acceptors;
+        public Mediator(params string[] acceptors)
+        {
+            this.acceptors = acceptors;
+        }
+        public virtual IList<string> Acceptors { get { return acceptors; } }
         public abstract void HandleNotification(string observerName, T notification);
 
     }

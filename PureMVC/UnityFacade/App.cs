@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Reflection;
+using System;
 
 namespace PureMVC
 {
-    public abstract class App<T> : MonoBehaviour where T : App<T>
+    public abstract class App<T> : Facade where T : App<T>,new()
     {
         protected static T instance = default(T);
-        protected Facade facade = default(Facade);
         private static object lockHelper = new object();
         private static bool isQuit = false;
         private bool isOn = false;
@@ -20,25 +20,12 @@ namespace PureMVC
                     {
                         if (instance == null && !isQuit)
                         {
-                            GameObject go = new GameObject(typeof(T).ToString());
-                            instance = go.AddComponent<T>();
+                            instance = new T();
                             Instence.OnFrameWorkLunched();
-                            DontDestroyOnLoad(go);
                         }
                     }
                 }
                 return instance;
-            }
-        }
-        public Facade Facade
-        {
-            get
-            {
-                if(facade == null)
-                {
-                    facade = new Facade();
-                }
-                return facade;
             }
         }
         public virtual void StartGame()
@@ -46,20 +33,7 @@ namespace PureMVC
             if(!isOn)
             {
                 isOn = true;
-                facade = CreateFacade();
             }
-        }
-
-        protected virtual Facade CreateFacade()
-        {
-            facade = new Facade();
-            return facade;
-        }
-
-        protected virtual void OnApplicationQuit()
-        {
-            isOn = false;
-            isQuit = true;
         }
         protected abstract void OnFrameWorkLunched();
         protected static void InitProperties<S>()
@@ -69,6 +43,11 @@ namespace PureMVC
             {
                 item.SetValue(null, item.Name, null);
             }
+        }
+        internal void OnApplicationQuit()
+        {
+            isOn = false;
+            isQuit = true;
         }
     }
 }
