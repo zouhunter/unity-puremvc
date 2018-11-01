@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System;
 namespace PureMVC
 {
-    public abstract class SceneManage : MonoBehaviour
+    public abstract class Program : MonoBehaviour
     {
         public interface IEventItem
         {
@@ -186,9 +186,9 @@ namespace PureMVC
             }
         }
 
-        protected static SceneManage _abstruct;
+        protected static Program _abstruct;
 
-        public static SceneManage Current
+        public static Program Current
         {
             get
             {
@@ -254,7 +254,7 @@ namespace PureMVC
         #endregion
     }
 
-    public abstract class SceneManage<S> : SceneManage where S:App<S>,new()
+    public abstract class Program<S> : Program where S:App<S>,new()
     {
         protected override void Awake()
         {
