@@ -4,10 +4,10 @@ namespace PureMVC
 {
     public interface IAcceptor
     {
-        string Acceptor { get; }
+        int Acceptor { get; }
     }
     public interface IAcceptors 
     {
-        IList<string> Acceptors { get; }
+        IList<int> Acceptors { get; }
     }
 }

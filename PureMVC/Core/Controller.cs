@@ -5,12 +5,12 @@ namespace PureMVC
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<string, Func<ICommandInternal>> m_commandMap;
+        protected IDictionary<int, Func<ICommandInternal>> m_commandMap;
 
         internal Controller(IView view)
         {
             m_view = view;
-            m_commandMap = new Dictionary<string, Func<ICommandInternal>>();
+            m_commandMap = new Dictionary<int, Func<ICommandInternal>>();
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace PureMVC
         /// </summary>
         /// <param name="notificationName"></param>
         /// <param name="newType"></param>
-        public virtual void RegisterCommand<T>(string observeName) where T : ICommand, new()
+        public virtual void RegisterCommand<T>(int observeName) where T : ICommand, new()
         {
             if (typeof(T).BaseType.IsGenericType)
             {
@@ -55,7 +55,7 @@ namespace PureMVC
         /// <typeparam name="P"></typeparam>
         /// <param name="notificationName"></param>
         /// <param name="newcommandFunc"></param>
-        public virtual void RegisterCommand<T, P>(string observeName) where T : ICommand<P>, new()
+        public virtual void RegisterCommand<T, P>(int observeName) where T : ICommand<P>, new()
         {
             if (!m_commandMap.ContainsKey(observeName))
             {
@@ -81,11 +81,11 @@ namespace PureMVC
             }
         }
 
-        public virtual bool HasCommand(string notificationName)
+        public virtual bool HasCommand(int notificationName)
         {
             return m_commandMap.ContainsKey(notificationName);
         }
-        public virtual void RemoveCommand(string notificationName)
+        public virtual void RemoveCommand(int notificationName)
         {
             if (m_commandMap.ContainsKey(notificationName))
             {

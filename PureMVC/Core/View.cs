@@ -6,12 +6,12 @@ namespace PureMVC
     public class View : IView
     {
         protected IList<IAcceptors> m_mediatorMap;
-        protected IDictionary<string, List<IObserverBase>> m_observerMap;
+        protected IDictionary<int, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
         internal View()
         {
             m_mediatorMap = new List<IAcceptors>();
-            m_observerMap = new Dictionary<string, List<IObserverBase>>();
+            m_observerMap = new Dictionary<int, List<IObserverBase>>();
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace PureMVC
         /// </summary>
         /// <param name="obName"></param>
         /// <param name="observer"></param>
-        public void RegisterObserver(string eventName, IObserverBase observer)
+        public void RegisterObserver(int eventName, IObserverBase observer)
         {
             if (m_observerMap.ContainsKey(eventName))
             {
@@ -99,7 +99,7 @@ namespace PureMVC
         /// 将指定的观察者移除
         /// </summary>
         /// <param name="name"></param>
-        public void RemoveObserver(string eventName, object notifyContext)
+        public void RemoveObserver(int eventName, object notifyContext)
         {
             // the observer list for the notification under inspection
             if (m_observerMap.ContainsKey(eventName))
@@ -125,7 +125,7 @@ namespace PureMVC
         /// 将所有的观察者移除
         /// </summary>
         /// <param name="name"></param>
-        public void RemoveObservers(string eventName)
+        public void RemoveObservers(int eventName)
         {
             if (m_observerMap.ContainsKey(eventName))
             {
@@ -189,7 +189,7 @@ namespace PureMVC
         /// </summary>
         /// <param name="observerName"></param>
         /// <returns></returns>
-        public bool HasObserver(string observerName)
+        public bool HasObserver(int observerName)
         {
             return m_observerMap.ContainsKey(observerName);
         }

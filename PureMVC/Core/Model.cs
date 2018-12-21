@@ -6,12 +6,12 @@ namespace PureMVC
     public class Model : IModel
     {
         protected readonly object m_syncRoot = new object();
-        protected IDictionary<string, IAcceptor> m_proxyMap;
-        protected Dictionary<string, Action<IAcceptor>> waitRegisterEvents = new Dictionary<string, Action<IAcceptor>>();
+        protected IDictionary<int, IAcceptor> m_proxyMap;
+        protected Dictionary<int, Action<IAcceptor>> waitRegisterEvents = new Dictionary<int, Action<IAcceptor>>();
 
         internal Model()
         {
-            m_proxyMap = new Dictionary<string, IAcceptor>();
+            m_proxyMap = new Dictionary<int, IAcceptor>();
         }
 
         public void RegisterProxy<T>(IProxy<T> proxy)
@@ -27,7 +27,7 @@ namespace PureMVC
                 waitRegisterEvents.Remove(proxy.Acceptor);
             }
         }
-        public void RetrieveData<T>(string proxyName, Action<T> retrieved)
+        public void RetrieveData<T>(int proxyName, Action<T> retrieved)
         {
             if (retrieved == null) return;
 
@@ -59,7 +59,7 @@ namespace PureMVC
                 }
             }
         }
-        public void RetrieveProxy<T>(string proxyName, Action<IProxy<T>> retrieved)
+        public void RetrieveProxy<T>(int proxyName, Action<IProxy<T>> retrieved)
         {
             if (retrieved == null) return;
 
@@ -96,7 +96,7 @@ namespace PureMVC
             }
         }
 
-        public void RetrieveProxy<P, T>(string proxyName, Action<P> retrieved) where P : IProxy<T>
+        public void RetrieveProxy<P, T>(int proxyName, Action<P> retrieved) where P : IProxy<T>
         {
             if (retrieved == null) return;
 
@@ -129,7 +129,7 @@ namespace PureMVC
             }
         }
 
-        public P RetrieveProxy<P, T>(string proxyName) where P : IProxy<T>
+        public P RetrieveProxy<P, T>(int proxyName) where P : IProxy<T>
         {
             lock (m_syncRoot)
             {
@@ -142,7 +142,7 @@ namespace PureMVC
             }
         }
 
-        public T RetrieveData<T>(string proxyName)
+        public T RetrieveData<T>(int proxyName)
         {
             lock (m_syncRoot)
             {
@@ -156,7 +156,7 @@ namespace PureMVC
                 }
             }
         }
-        public IProxy<T> RetrieveProxy<T>(string proxyName)
+        public IProxy<T> RetrieveProxy<T>(int proxyName)
         {
             lock (m_syncRoot)
             {
@@ -170,14 +170,14 @@ namespace PureMVC
                 }
             }
         }
-        public bool HasProxy(string proxyName)
+        public bool HasProxy(int proxyName)
         {
             lock (m_syncRoot)
             {
                 return m_proxyMap.ContainsKey(proxyName);
             }
         }
-        public void RemoveProxy(string proxyName)
+        public void RemoveProxy(int proxyName)
         {
             lock (m_syncRoot)
             {
@@ -188,7 +188,7 @@ namespace PureMVC
             }
         }
 
-        public void CansaleRetrieve(string proxyName)
+        public void CansaleRetrieve(int proxyName)
         {
             if (waitRegisterEvents.ContainsKey(proxyName))
             {

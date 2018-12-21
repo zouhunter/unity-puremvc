@@ -5,8 +5,8 @@ namespace PureMVC
 {
     public interface INotifier
     {
-        void SendNotification(string notificationName);
-        void SendNotification<T>(string notificationName, T body);
-        void SendNotification<T>(string notificationName, T body, Type type);
+        void SendNotification(int notificationName);
+        void SendNotification<T>(int notificationName, T body);
+        void SendNotification<T>(int notificationName, T body, Type type);
     }
 }

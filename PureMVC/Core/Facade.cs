@@ -37,7 +37,7 @@ namespace PureMVC
         {
             m_model.RegisterProxy(prox);
         }
-        public void RegisterProxy<T>(string proxyName, T data)
+        public void RegisterProxy<T>(int proxyName, T data)
         {
             if(m_model.HasProxy(proxyName))
             {
@@ -48,40 +48,40 @@ namespace PureMVC
                 m_model.RegisterProxy(new Proxy<T>(proxyName,data));
             }
         }
-        public void CansaleRetrieve(string name)
+        public void CansaleRetrieve(int name)
         {
             m_model.CansaleRetrieve(name);
         }
 
-        public P RetrieveProxy<P, T>(string name) where P : IProxy<T>
+        public P RetrieveProxy<P, T>(int name) where P : IProxy<T>
         {
             return m_model.RetrieveProxy<P, T>(name);
         }
-        public void RetrieveProxy<P, T>(string name, Action<P> onRetieved) where P : IProxy<T>
+        public void RetrieveProxy<P, T>(int name, Action<P> onRetieved) where P : IProxy<T>
         {
             m_model.RetrieveProxy<P, T>(name, onRetieved);
         }
-        public void RetrieveProxy<T>(string name, Action<IProxy<T>> onRetieved)
+        public void RetrieveProxy<T>(int name, Action<IProxy<T>> onRetieved)
         {
             m_model.RetrieveProxy<T>(name, onRetieved);
         }
-        public IProxy<T> RetrieveProxy<T>(string name)
+        public IProxy<T> RetrieveProxy<T>(int name)
         {
             return m_model.RetrieveProxy<T>(name);
         }
-        public void RetrieveData<T>(string name, Action<T> onRetieved)
+        public void RetrieveData<T>(int name, Action<T> onRetieved)
         {
             m_model.RetrieveData<T>(name, onRetieved);
         }
-        public T RetrieveData<T>(string name)
+        public T RetrieveData<T>(int name)
         {
             return m_model.RetrieveData<T>(name);
         }
-        public bool HaveProxy(string name)
+        public bool HaveProxy(int name)
         {
             return m_model.HasProxy(name);
         }
-        public void RemoveProxy(string name)
+        public void RemoveProxy(int name)
         {
             m_model.RemoveProxy(name);
         }
@@ -102,16 +102,16 @@ namespace PureMVC
             m_view.RemoveMediator(mediator);
         }
 
-        public void RegisterCommand<T, P>(string observeName) where T : ICommand<P>, new()
+        public void RegisterCommand<T, P>(int observeName) where T : ICommand<P>, new()
         {
             m_controller.RegisterCommand<T, P>(observeName);
         }
 
-        public void RegisterCommand<T>(string observeName) where T : ICommand, new()
+        public void RegisterCommand<T>(int observeName) where T : ICommand, new()
         {
             m_controller.RegisterCommand<T>(observeName);
         }
-        public void RemoveCommand(string observerName)
+        public void RemoveCommand(int observerName)
         {
             m_controller.RemoveCommand(observerName);
         }
@@ -128,15 +128,15 @@ namespace PureMVC
             }
         }
 
-        public void SendNotification(string observeName)
+        public void SendNotification(int observeName)
         {
             SendNotification<object>(observeName, null, null);
         }
-        public void SendNotification<T>(string observeName, T body)
+        public void SendNotification<T>(int observeName, T body)
         {
             SendNotification<T>(observeName, body, null);
         }
-        public void SendNotification<T>(string observeName, T body, Type type)
+        public void SendNotification<T>(int observeName, T body, Type type)
         {
             Notification<T> notify = Notification<T>.Allocate(observeName, body, type);
             NotifyObservers(notify);

@@ -58,14 +58,14 @@ namespace PureMVC
 
         public class EventHold
         {
-            protected IDictionary<string, List<IEventItem>> m_observerMap;
+            protected IDictionary<int, List<IEventItem>> m_observerMap;
 
-            public Action<string> MessageNotHandled { get; set; }
+            public Action<int> MessageNotHandled { get; set; }
             public EventHold()
             {
-                m_observerMap = new Dictionary<string, List<IEventItem>>();
+                m_observerMap = new Dictionary<int, List<IEventItem>>();
             }
-            public void NoMessageHandle(string rMessage)
+            public void NoMessageHandle(int rMessage)
             {
                 if (MessageNotHandled == null)
                 {
@@ -78,28 +78,28 @@ namespace PureMVC
             }
 
             #region 注册注销事件
-            public void AddDelegate<T>(string key, Action<T> handle)
+            public void AddDelegate<T>(int key, Action<T> handle)
             {
                 if (handle == null) return;
                 EventItem<T> observer = EventItem<T>.Allocate(handle);
                 RegisterObserver(key, observer);
             }
-            public void AddDelegate(string key, UnityAction handle)
+            public void AddDelegate(int key, UnityAction handle)
             {
                 if (handle == null) return;
                 EventItem observer = EventItem.Allocate(handle);
                 RegisterObserver(key, observer);
             }
 
-            public void RemoveDelegate<T>(string key, Action<T> handle)
+            public void RemoveDelegate<T>(int key, Action<T> handle)
             {
                 ReMoveObserver(key, handle);
             }
-            public void RemoveDelegate(string key, UnityAction handle)
+            public void RemoveDelegate(int key, UnityAction handle)
             {
                 ReMoveObserver(key, handle);
             }
-            public void RemoveDelegates(string key)
+            public void RemoveDelegates(int key)
             {
                 if (m_observerMap.ContainsKey(key))
                 {
@@ -109,7 +109,7 @@ namespace PureMVC
             #endregion
 
             #region 触发事件
-            public void NotifyObserver(string key)
+            public void NotifyObserver(int key)
             {
                 if (m_observerMap.ContainsKey(key))
                 {
@@ -132,7 +132,7 @@ namespace PureMVC
                     NoMessageHandle(key);
                 }
             }
-            public void NotifyObserver<T>(string key, T value)
+            public void NotifyObserver<T>(int key, T value)
             {
                 if (m_observerMap.ContainsKey(key))
                 {
@@ -150,7 +150,7 @@ namespace PureMVC
             }
             #endregion
 
-            private void RegisterObserver(string key, IEventItem observer)
+            private void RegisterObserver(int key, IEventItem observer)
             {
                 if (m_observerMap.ContainsKey(key))
                 {
@@ -165,7 +165,7 @@ namespace PureMVC
                 }
             }
 
-            private bool ReMoveObserver(string key, object handle)
+            private bool ReMoveObserver(int key, object handle)
             {
                 if (handle == null) return false;
                 if (m_observerMap.ContainsKey(key))
@@ -195,44 +195,44 @@ namespace PureMVC
                 return _abstruct;
             }
         }
-        private ObjectPool _container;
+        private GameObjectPool _container;
         private EventHold _eventHold;
         protected virtual void Awake()
         {
             _eventHold = new EventHold();
-            _container = new ObjectPool(this);
+            _container = new GameObjectPool(this);
             _abstruct = this;
         }
 
         #region 访问事件系统
-        public void RegisterEvent(string noti, UnityAction even)
+        public void RegisterEvent(int noti, UnityAction even)
         {
             _eventHold.AddDelegate(noti, even);
         }
-        public void RegisterEvent<T>(string noti, Action<T> even)
+        public void RegisterEvent<T>(int noti, Action<T> even)
         {
             _eventHold.AddDelegate(noti, even);
         }
 
-        public void RemoveEvent(string noti, UnityAction even)
+        public void RemoveEvent(int noti, UnityAction even)
         {
             _eventHold.RemoveDelegate(noti, even);
         }
-        public void RemoveEvent<T>(string noti, Action<T> even)
+        public void RemoveEvent<T>(int noti, Action<T> even)
         {
             _eventHold.RemoveDelegate(noti, even);
         }
 
-        public void RemoveEvents(string noti)
+        public void RemoveEvents(int noti)
         {
             _eventHold.RemoveDelegates(noti);
         }
 
-        public void Notify(string noti)
+        public void Notify(int noti)
         {
             _eventHold.NotifyObserver(noti);
         }
-        public void Notify<T>(string noti, T data)
+        public void Notify<T>(int noti, T data)
         {
             _eventHold.NotifyObserver<T>(noti, data);
         }

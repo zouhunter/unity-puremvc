@@ -10,7 +10,7 @@ namespace PureMVC
     {
         public T Body { get; set; }
         public Type Type { get; set; }
-        public string ObserverName { get; set; }
+        public int ObserverName { get; set; }
         public new string ToString
         {
             get
@@ -29,7 +29,7 @@ namespace PureMVC
         {
             Body = default(T);
             Type = null;
-            ObserverName = null;
+            ObserverName = -1;
             IsUsing = false;
         }
 
@@ -45,7 +45,7 @@ namespace PureMVC
         /// Pulls an object from the pool.
         /// </summary>
         /// <returns></returns>
-        public static Notification<T> Allocate(string ObserverName, T body, Type Type)
+        public static Notification<T> Allocate(int ObserverName, T body, Type Type)
         {
             Notification<T> lInstance = sPool.Allocate();
             if (lInstance == null) { lInstance = new Notification<T>(); }

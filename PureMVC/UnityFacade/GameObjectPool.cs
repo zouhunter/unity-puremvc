@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace PureMVC
 {
-    public class ObjectPool
+    public class GameObjectPool
     {
         private float cachingTime = 30f;
         //创建对象池字典
@@ -15,7 +15,7 @@ namespace PureMVC
         private Coroutine updateCo;
         private MonoBehaviour holder;
 
-        public ObjectPool(MonoBehaviour holder)
+        public GameObjectPool(MonoBehaviour holder)
         {
             this.holder = holder;
             poolRoot = new GameObject("poolRoot").transform;

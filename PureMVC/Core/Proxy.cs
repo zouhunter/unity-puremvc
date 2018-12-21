@@ -6,11 +6,11 @@ namespace PureMVC
 {
     public class Proxy<T> : IProxy<T>
     {
-        public Proxy(string name)
+        public Proxy(int name)
         {
             m_proxyName = name;
         }
-        public Proxy(string name, T data)
+        public Proxy(int name, T data)
         {
             m_proxyName = name;
             Data = data;
@@ -18,8 +18,8 @@ namespace PureMVC
 
         public virtual T Data { get; set; }
 
-        protected string m_proxyName;
-        public string Acceptor
+        protected int m_proxyName;
+        public int Acceptor
         {
             get
             {

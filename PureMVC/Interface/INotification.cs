@@ -4,7 +4,7 @@ namespace PureMVC
 {
     public interface INotification
     {
-        string ObserverName { get; set; }
+        int ObserverName { get; set; }
         Type Type { get; set; }
         string ToString { get; }
         bool Destroy { get; set; }
