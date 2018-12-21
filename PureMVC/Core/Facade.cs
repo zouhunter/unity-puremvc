@@ -6,7 +6,7 @@ namespace PureMVC
         protected IModel m_model;
         protected IView m_view;
         protected IController m_controller;
-
+        protected Action<int> notifyNotHandle { get; set; }
         public Facade()
         {
             InitializeFacade();
@@ -111,6 +111,7 @@ namespace PureMVC
         {
             m_controller.RegisterCommand<T>(observeName);
         }
+
         public void RemoveCommand(int observerName)
         {
             m_controller.RemoveCommand(observerName);
@@ -126,23 +127,25 @@ namespace PureMVC
             {
                 m_view.NotifyObservers<T>(notification);
             }
+            else
+            {
+                if (notifyNotHandle != null)
+                {
+                    notifyNotHandle.Invoke(notification.ObserverName);
+                }
+            }
         }
 
         public void SendNotification(int observeName)
         {
-            SendNotification<object>(observeName, null, null);
+            SendNotification<object>(observeName, null);
         }
         public void SendNotification<T>(int observeName, T body)
         {
-            SendNotification<T>(observeName, body, null);
-        }
-        public void SendNotification<T>(int observeName, T body, Type type)
-        {
-            Notification<T> notify = Notification<T>.Allocate(observeName, body, type);
+            Notification<T> notify = Notification<T>.Allocate(observeName, body);
             NotifyObservers(notify);
             notify.Release();
         }
-
         #endregion
 
     }

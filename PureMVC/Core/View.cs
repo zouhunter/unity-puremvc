@@ -58,7 +58,7 @@ namespace PureMVC
                     }
                     else if (observer is IObserver<object>)
                     {
-                        Notification<object> notify = Notification<object>.Allocate(noti.ObserverName, noti.Body, noti.Type);
+                        Notification<object> notify = Notification<object>.Allocate(noti.ObserverName, noti.Body);
                         (observer as IObserver<object>).NotifyObserver(notify);
                         notify.Release();
                     }

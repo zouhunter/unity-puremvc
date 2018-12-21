@@ -4,12 +4,14 @@ using System;
 
 namespace PureMVC
 {
-    public abstract class App<T> : Facade where T : App<T>,new()
+    public abstract class  Director<T> : Facade where T :  Director<T>,new()
     {
         protected static T instance = default(T);
         private static object lockHelper = new object();
         private static bool isQuit = false;
         private bool isOn = false;
+        private EventHold _eventDispatch;
+        public EventHold eventDispatch { get { return _eventDispatch; } }
         public static T Instence
         {
             get
@@ -32,8 +34,21 @@ namespace PureMVC
         {
             if(!isOn)
             {
+                notifyNotHandle = OnNotifyNotHandle;
+
+                _eventDispatch = new EventHold();
+                _eventDispatch.messageNoHandle = OnEventNotHandled;
+
                 isOn = true;
             }
+        }
+        protected virtual void OnEventNotHandled(int eventID)
+        {
+            Debug.LogWarning("【Unhandled Event】 ID: " + eventID);
+        }
+        protected virtual void OnNotifyNotHandle(int observerID)
+        {
+            Debug.LogWarning("【Unhandled Notify】 ID: " + observerID);
         }
         protected abstract void OnFrameWorkLunched();
         protected static void InitProperties<S>()

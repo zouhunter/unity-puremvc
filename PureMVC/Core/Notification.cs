@@ -9,7 +9,6 @@ namespace PureMVC
     public class Notification<T> : INotification<T>
     {
         public T Body { get; set; }
-        public Type Type { get; set; }
         public int ObserverName { get; set; }
         public new string ToString
         {
@@ -18,7 +17,6 @@ namespace PureMVC
                 string msg = "";
                 msg += "\nObserverName:" + ObserverName.ToString();
                 msg += "\nBody:" + ((Body == null) ? "null" : Body.ToString());
-                msg += "\nType:" + ((Type == null) ? "null" : Type.ToString());
                 return msg;
             }
         }
@@ -28,7 +26,6 @@ namespace PureMVC
         public virtual void Clear()
         {
             Body = default(T);
-            Type = null;
             ObserverName = -1;
             IsUsing = false;
         }
@@ -45,14 +42,13 @@ namespace PureMVC
         /// Pulls an object from the pool.
         /// </summary>
         /// <returns></returns>
-        public static Notification<T> Allocate(int ObserverName, T body, Type Type)
+        public static Notification<T> Allocate(int ObserverName, T body)
         {
             Notification<T> lInstance = sPool.Allocate();
             if (lInstance == null) { lInstance = new Notification<T>(); }
 
             lInstance.ObserverName = ObserverName;
             lInstance.Body = body;
-            lInstance.Type = Type;
 
             lInstance.IsUsing = true;
             return lInstance;
