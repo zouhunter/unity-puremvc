@@ -27,19 +27,19 @@ namespace PureMVC
                 waitRegisterEvents.Remove(proxy.Acceptor);
             }
         }
-        public void RetrieveData<T>(int proxyName, Action<T> retrieved)
+        public void RetrieveData<T>(int proxyKey, Action<T> retrieved)
         {
             if (retrieved == null) return;
 
-            if (HasProxy(proxyName))
+            if (HasProxy(proxyKey))
             {
-                retrieved(RetrieveData<T>(proxyName));
+                retrieved(RetrieveData<T>(proxyKey));
             }
             else
             {
-                if (waitRegisterEvents.ContainsKey(proxyName))
+                if (waitRegisterEvents.ContainsKey(proxyKey))
                 {
-                    waitRegisterEvents[proxyName] += (x) =>
+                    waitRegisterEvents[proxyKey] += (x) =>
                     {
                         if (x is IProxy<T>)
                         {
@@ -49,7 +49,7 @@ namespace PureMVC
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) =>
+                    waitRegisterEvents.Add(proxyKey, (x) =>
                     {
                         if (x is IProxy<T>)
                         {
@@ -59,13 +59,13 @@ namespace PureMVC
                 }
             }
         }
-        public void RetrieveProxy<T>(int proxyName, Action<IProxy<T>> retrieved)
+        public void RetrieveProxy<T>(int proxyKey, Action<IProxy<T>> retrieved)
         {
             if (retrieved == null) return;
 
-            if (HasProxy(proxyName))
+            if (HasProxy(proxyKey))
             {
-                var proxy = RetrieveProxy<T>(proxyName);
+                var proxy = RetrieveProxy<T>(proxyKey);
                 if (proxy is IProxy<T>)
                 {
                     retrieved((IProxy<T>)proxy);
@@ -73,9 +73,9 @@ namespace PureMVC
             }
             else
             {
-                if (waitRegisterEvents.ContainsKey(proxyName))
+                if (waitRegisterEvents.ContainsKey(proxyKey))
                 {
-                    waitRegisterEvents[proxyName] += (x) =>
+                    waitRegisterEvents[proxyKey] += (x) =>
                     {
                         if (x is IProxy<T>)
                         {
@@ -85,7 +85,7 @@ namespace PureMVC
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) =>
+                    waitRegisterEvents.Add(proxyKey, (x) =>
                     {
                         if (x is IProxy<T>)
                         {
@@ -96,19 +96,19 @@ namespace PureMVC
             }
         }
 
-        public void RetrieveProxy<P, T>(int proxyName, Action<P> retrieved) where P : IProxy<T>
+        public void RetrieveProxy<P, T>(int proxyKey, Action<P> retrieved) where P : IProxy<T>
         {
             if (retrieved == null) return;
 
-            if (HasProxy(proxyName))
+            if (HasProxy(proxyKey))
             {
-                retrieved(RetrieveProxy<P, T>(proxyName));
+                retrieved(RetrieveProxy<P, T>(proxyKey));
             }
             else
             {
-                if (waitRegisterEvents.ContainsKey(proxyName))
+                if (waitRegisterEvents.ContainsKey(proxyKey))
                 {
-                    waitRegisterEvents[proxyName] += (x) =>
+                    waitRegisterEvents[proxyKey] += (x) =>
                     {
                         if (x is P)
                         {
@@ -118,7 +118,7 @@ namespace PureMVC
                 }
                 else
                 {
-                    waitRegisterEvents.Add(proxyName, (x) =>
+                    waitRegisterEvents.Add(proxyKey, (x) =>
                     {
                         if (x is P)
                         {
@@ -129,11 +129,11 @@ namespace PureMVC
             }
         }
 
-        public P RetrieveProxy<P, T>(int proxyName) where P : IProxy<T>
+        public P RetrieveProxy<P, T>(int proxyKey) where P : IProxy<T>
         {
             lock (m_syncRoot)
             {
-                var proxy = RetrieveProxy<T>(proxyName);
+                var proxy = RetrieveProxy<T>(proxyKey);
                 if (proxy is P)
                 {
                     return (P)proxy;
@@ -142,13 +142,13 @@ namespace PureMVC
             }
         }
 
-        public T RetrieveData<T>(int proxyName)
+        public T RetrieveData<T>(int proxyKey)
         {
             lock (m_syncRoot)
             {
-                if (m_proxyMap.ContainsKey(proxyName) && m_proxyMap[proxyName] is IProxy<T>)
+                if (m_proxyMap.ContainsKey(proxyKey) && m_proxyMap[proxyKey] is IProxy<T>)
                 {
-                    return ((m_proxyMap[proxyName] as IProxy<T>).Data);
+                    return ((m_proxyMap[proxyKey] as IProxy<T>).Data);
                 }
                 else
                 {
@@ -156,13 +156,13 @@ namespace PureMVC
                 }
             }
         }
-        public IProxy<T> RetrieveProxy<T>(int proxyName)
+        public IProxy<T> RetrieveProxy<T>(int proxyKey)
         {
             lock (m_syncRoot)
             {
-                if (m_proxyMap.ContainsKey(proxyName) && m_proxyMap[proxyName] is IProxy<T>)
+                if (m_proxyMap.ContainsKey(proxyKey) && m_proxyMap[proxyKey] is IProxy<T>)
                 {
-                    return ((m_proxyMap[proxyName] as IProxy<T>));
+                    return ((m_proxyMap[proxyKey] as IProxy<T>));
                 }
                 else
                 {
@@ -170,29 +170,29 @@ namespace PureMVC
                 }
             }
         }
-        public bool HasProxy(int proxyName)
+        public bool HasProxy(int proxyKey)
         {
             lock (m_syncRoot)
             {
-                return m_proxyMap.ContainsKey(proxyName);
+                return m_proxyMap.ContainsKey(proxyKey);
             }
         }
-        public void RemoveProxy(int proxyName)
+        public void RemoveProxy(int proxyKey)
         {
             lock (m_syncRoot)
             {
-                if (m_proxyMap.ContainsKey(proxyName))
+                if (m_proxyMap.ContainsKey(proxyKey))
                 {
-                    m_proxyMap.Remove(proxyName);
+                    m_proxyMap.Remove(proxyKey);
                 }
             }
         }
 
-        public void CansaleRetrieve(int proxyName)
+        public void CansaleRetrieve(int proxyKey)
         {
-            if (waitRegisterEvents.ContainsKey(proxyName))
+            if (waitRegisterEvents.ContainsKey(proxyKey))
             {
-                waitRegisterEvents.Remove(proxyName);
+                waitRegisterEvents.Remove(proxyKey);
             }
         }
     }

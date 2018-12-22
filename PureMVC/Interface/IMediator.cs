@@ -5,11 +5,11 @@ namespace PureMVC
 {
     public interface IMediator : IAcceptors
     {
-        void HandleNotification(int observerName);
+        void HandleNotification(int observeKey);
     }
 
     public interface IMediator<T> : IAcceptors
     {
-        void HandleNotification(int observerName, T notify);
+        void HandleNotification(int observeKey, T notify);
     }
 }

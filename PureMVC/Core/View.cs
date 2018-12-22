@@ -41,9 +41,9 @@ namespace PureMVC
         {
             IList<IObserverBase> observers = null;
 
-            if (m_observerMap.ContainsKey(noti.ObserverName))
+            if (m_observerMap.ContainsKey(noti.ObserverKey))
             {
-                IList<IObserverBase> observers_ref = m_observerMap[noti.ObserverName];
+                IList<IObserverBase> observers_ref = m_observerMap[noti.ObserverKey];
                 observers = new List<IObserverBase>(observers_ref);
             }
 
@@ -58,7 +58,7 @@ namespace PureMVC
                     }
                     else if (observer is IObserver<object>)
                     {
-                        Notification<object> notify = Notification<object>.Allocate(noti.ObserverName, noti.Body);
+                        Notification<object> notify = Notification<object>.Allocate(noti.ObserverKey, noti.Body);
                         (observer as IObserver<object>).NotifyObserver(notify);
                         notify.Release();
                     }
@@ -77,9 +77,9 @@ namespace PureMVC
         {
             IList<IObserverBase> observers = null;
 
-            if (m_observerMap.ContainsKey(noti.ObserverName))
+            if (m_observerMap.ContainsKey(noti.ObserverKey))
             {
-                IList<IObserverBase> observers_ref = m_observerMap[noti.ObserverName];
+                IList<IObserverBase> observers_ref = m_observerMap[noti.ObserverKey];
                 observers = new List<IObserverBase>(observers_ref);
             }
 
@@ -187,11 +187,11 @@ namespace PureMVC
         /// <summary>
         /// 是否含有观察者
         /// </summary>
-        /// <param name="observerName"></param>
+        /// <param name="observeKey"></param>
         /// <returns></returns>
-        public bool HasObserver(int observerName)
+        public bool HasObserver(int observeKey)
         {
-            return m_observerMap.ContainsKey(observerName);
+            return m_observerMap.ContainsKey(observeKey);
         }
 
         public void RemoveMediator<T>(IMediator<T> mediator)

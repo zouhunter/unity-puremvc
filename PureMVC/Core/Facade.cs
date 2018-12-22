@@ -38,15 +38,15 @@ namespace PureMVC
         {
             m_model.RegisterProxy(prox);
         }
-        public void RegisterProxy<T>(int proxyName, T data)
+        public void RegisterProxy<T>(int proxyKey, T data)
         {
-            if(m_model.HasProxy(proxyName))
+            if(m_model.HasProxy(proxyKey))
             {
-                m_model.RetrieveProxy<T>(proxyName).Data = data;
+                m_model.RetrieveProxy<T>(proxyKey).Data = data;
             }
             else
             {
-                m_model.RegisterProxy(new Proxy<T>(proxyName,data));
+                m_model.RegisterProxy(new Proxy<T>(proxyKey,data));
             }
         }
         public void CansaleRetrieve(int name)
@@ -103,19 +103,24 @@ namespace PureMVC
             m_view.RemoveMediator(mediator);
         }
 
-        public void RegisterCommand<T, P>(int observeName) where T : ICommand<P>, new()
+        public void RegisterCommand<T, P>(int observeKey) where T : ICommand<P>, new()
         {
-            m_controller.RegisterCommand<T, P>(observeName);
+            m_controller.RegisterCommand<T, P>(observeKey);
         }
 
-        public void RegisterCommand<T>(int observeName) where T : ICommand, new()
+        public void RegisterCommand<T>(int observeKey) where T : ICommand, new()
         {
-            m_controller.RegisterCommand<T>(observeName);
+            m_controller.RegisterCommand<T>(observeKey);
         }
 
-        public void RemoveCommand(int observerName)
+        public bool HaveCommand(int observerKey)
         {
-            m_controller.RemoveCommand(observerName);
+           return m_controller.HaveCommand(observerKey);
+        }
+
+        public void RemoveCommand(int observeKey)
+        {
+            m_controller.RemoveCommand(observeKey);
         }
 
         /// <summary>
@@ -124,7 +129,7 @@ namespace PureMVC
         /// <param name="notification"></param>
         protected void NotifyObservers<T>(INotification<T> notification)
         {
-            if (m_view.HasObserver(notification.ObserverName))
+            if (m_view.HasObserver(notification.ObserverKey))
             {
                 m_view.NotifyObservers<T>(notification);
             }
@@ -132,18 +137,18 @@ namespace PureMVC
             {
                 if (notifyNotHandle != null)
                 {
-                    notifyNotHandle.Invoke(notification.ObserverName);
+                    notifyNotHandle.Invoke(notification.ObserverKey);
                 }
             }
         }
 
-        public void SendNotification(int observeName)
+        public void SendNotification(int observeKey)
         {
-            SendNotification<object>(observeName, null);
+            SendNotification<object>(observeKey, null);
         }
-        public void SendNotification<T>(int observeName, T body)
+        public void SendNotification<T>(int observeKey, T body)
         {
-            Notification<T> notify = Notification<T>.Allocate(observeName, body);
+            Notification<T> notify = Notification<T>.Allocate(observeKey, body);
             NotifyObservers(notify);
             notify.Release();
         }

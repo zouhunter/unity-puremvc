@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PureMVC;
+using PureMVC.Unity;
 
 
 public class Main : Program<GameManager>
@@ -10,18 +10,17 @@ public class Main : Program<GameManager>
     {
         if (GUILayout.Button("切换颜色组 0"))
         {
-            GameManager.Instence.SendNotification(ObserverName.CHANGE_COLOR, 0);
+            GameManager.Notify(ObserverName.CHANGE_COLOR, 0);
         }
         if (GUILayout.Button("切换颜色组 1"))
         {
-            GameManager.Instence.SendNotification(ObserverName.CHANGE_COLOR, 1);
+            GameManager.Notify(ObserverName.CHANGE_COLOR, 1);
         }
         if (GUILayout.Button("随机玩家尺寸"))
         {
-            GameManager.Instence.SendNotification(ObserverName.RANDOM_SCALE);
+            GameManager.Notify(ObserverName.RANDOM_SCALE);
         }
     }
-
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -30,7 +29,7 @@ public class Main : Program<GameManager>
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                GameManager.Instence.eventDispatch.InvokeEvents(EventName.MOVE_PLAYER, hit.point);
+                GameManager.Execute(EventName.MOVE_PLAYER, hit.point);
             }
         }
     }

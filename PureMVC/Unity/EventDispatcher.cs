@@ -117,18 +117,27 @@ namespace PureMVC
     {
         protected IView m_view;
         protected IDictionary<int, List<IEventItem>> m_observerMap;
-        internal Action<int> messageNoHandle { get; set; }
+        internal Action<int, string> messageNoHandle { get; set; }
+        internal Action<int, Exception> messageExceptionHandle { get; set; }
+        private bool isRuning = false;
+        private event Action endAction;
+
         public EventDispatcher()
         {
             m_observerMap = new Dictionary<int, List<IEventItem>>();
         }
-        protected void NoMessageaction(int rMessage)
+        protected void NoMessageaction(int eventKey, string err)
         {
-            if (messageNoHandle != null){
-                messageNoHandle(rMessage);
+            if (messageNoHandle != null)
+            {
+                messageNoHandle(eventKey, err);
             }
         }
-
+        protected void MessageException(int eventKey,Exception e)
+        {
+            if (messageExceptionHandle != null)
+                messageExceptionHandle.Invoke(eventKey, e);
+        }
         #region 注册注销事件
         public void RegistEvent(int key, Action action)
         {
@@ -160,18 +169,27 @@ namespace PureMVC
             EventItem<T1, T2, T3, T4> observer = EventItem<T1, T2, T3, T4>.Allocate(action);
             RegistEvent(key, observer);
         }
+
         private void RegistEvent(int key, IEventItem observer)
         {
-            if (m_observerMap.ContainsKey(key))
+            if (m_observerMap.ContainsKey(key) && m_observerMap[key] == null)
             {
-                if (!m_observerMap[key].Contains(observer))
-                {
-                    m_observerMap[key].Add(observer);
-                }
+                m_observerMap[key] = new List<IEventItem>();
             }
             else
             {
-                m_observerMap.Add(key, new List<IEventItem>() { observer });
+                m_observerMap.Add(key, new List<IEventItem>() );
+            }
+
+            if(isRuning)
+            {
+                endAction += () => {
+                    m_observerMap[key].Add(observer);
+                };
+            }
+            else
+            {
+                m_observerMap[key].Add(observer);
             }
         }
         #endregion
@@ -184,21 +202,31 @@ namespace PureMVC
                 m_observerMap.Remove(key);
             }
         }
-        public void RemoveEvents<T>(int key, Action<T> action)
+        public void RemoveEvent(int key, Action action)
         {
-            RemoveEvent(key, action);
+            RemoveEvent(key, (System.Object)action);
         }
-        public void RemoveEvents<T1, T2, T3>(int key, Action<T1, T2, T3> action)
+        public void RemoveEvent<T>(int key, Action<T> action)
         {
-            RemoveEvent(key, action);
+            RemoveEvent(key, (System.Object)action);
         }
-        public void RemoveEvents<T1, T2, T3, T4>(int key, Action<T1, T2, T3, T4> action)
+        public void RemoveEvent<T1, T2>(int key, Action<T1, T2> action)
         {
-            RemoveEvent(key, action);
+            RemoveEvent(key, (System.Object)action);
         }
+        public void RemoveEvent<T1, T2, T3>(int key, Action<T1, T2, T3> action)
+        {
+            RemoveEvent(key, (System.Object)action);
+        }
+        public void RemoveEvent<T1, T2, T3, T4>(int key, Action<T1, T2, T3, T4> action)
+        {
+            RemoveEvent(key, (System.Object)action);
+        }
+
         private bool RemoveEvent(int key, object action)
         {
             if (action == null) return false;
+
             if (m_observerMap.ContainsKey(key))
             {
                 var list = m_observerMap[key];
@@ -218,46 +246,254 @@ namespace PureMVC
         #endregion
 
         #region 触发事件
-        public void InvokeEvents(int key)
+        public void ExecuteEvents(int key)
         {
             if (m_observerMap.ContainsKey(key))
             {
                 var list = m_observerMap[key];
-                foreach (var item in list)
+                for (int i = 0; i < list.Count; i++)
                 {
-                    if (item is EventItem)
+                    var eventItem = list[i];
+                    if (eventItem is EventItem)
                     {
-                        (item as EventItem).action.Invoke();
+                        TryRunAction(key, eventItem);
                     }
                     else
                     {
-                        NoMessageaction(key);
+                        NoMessageaction(key, "参数不正确");
                     }
                 }
-
             }
             else
             {
-                NoMessageaction(key);
+                NoMessageaction(key, "未注册");
             }
+
+            RunEndAction();
         }
-        public void InvokeEvents<T>(int key, T value)
+        public void ExecuteEvents<T>(int key, T value)
         {
             if (m_observerMap.ContainsKey(key))
             {
                 var list = m_observerMap[key];
-                var actions = list.FindAll(x => x is EventItem<T>);
-                foreach (var item in actions)
+
+                for (int i = 0; i < list.Count; i++)
                 {
-                    (item as EventItem<T>).action.Invoke(value);
+                    var eventItem = list[i];
+
+                    if (eventItem is EventItem<T>)
+                    {
+                        TryRunAction(key, eventItem, value);
+                    }
+                    else if (eventItem is EventItem)
+                    {
+                        TryRunAction(key, eventItem);
+                    }
+                    else
+                    {
+                        NoMessageaction(key, "参数不正确");
+                    }
                 }
             }
             else
             {
-                NoMessageaction(key);
+                NoMessageaction(key, "未注册");
+            }
+            RunEndAction();
+        }
+        public void ExecuteEvents<T1, T2>(int key, T1 value1, T2 value2)
+        {
+            if (m_observerMap.ContainsKey(key))
+            {
+                var list = m_observerMap[key];
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var eventItem = list[i];
+
+                    if (eventItem is EventItem<T1, T2>)
+                    {
+                        TryRunAction(key, eventItem, value1, value2);
+                    }
+                    else if (eventItem is EventItem<T1>)
+                    {
+                        TryRunAction(key, eventItem, value1);
+                    }
+                    else if (eventItem is EventItem)
+                    {
+                        TryRunAction(key, eventItem);
+                    }
+                    else
+                    {
+                        NoMessageaction(key, "参数不正确");
+                    }
+                }
+            }
+            else
+            {
+                NoMessageaction(key, "未注册");
+            }
+            RunEndAction();
+        }
+        public void ExecuteEvents<T1, T2, T3>(int key, T1 value1, T2 value2, T3 value3)
+        {
+            if (m_observerMap.ContainsKey(key))
+            {
+                var list = m_observerMap[key];
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var eventItem = list[i];
+                    if (eventItem is EventItem<T1, T2, T3>)
+                    {
+                        TryRunAction(key, eventItem, value1, value2, value3);
+                    }
+                    else if (eventItem is EventItem<T1, T2>)
+                    {
+                        TryRunAction(key, eventItem, value1, value2);
+                    }
+                    else if (eventItem is EventItem<T1>)
+                    {
+                        TryRunAction(key, eventItem, value1);
+                    }
+                    else if (eventItem is EventItem)
+                    {
+                        TryRunAction(key, eventItem);
+                    }
+                    else
+                    {
+                        NoMessageaction(key, "参数不正确");
+                    }
+                }
+            }
+            else
+            {
+                NoMessageaction(key, "未注册");
+            }
+            RunEndAction();
+        }
+        public void ExecuteEvents<T1, T2, T3,T4>(int key, T1 value1, T2 value2, T3 value3, T4 value4)
+        {
+            if (m_observerMap.ContainsKey(key))
+            {
+                var list = m_observerMap[key];
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    var eventItem = list[i];
+                    if (eventItem is EventItem<T1, T2, T3,T4>)
+                    {
+                        TryRunAction(key, eventItem, value1, value2, value3,value4);
+                    }
+                    else if (eventItem is EventItem<T1, T2, T3>)
+                    {
+                        TryRunAction(key, eventItem, value1, value2,value3);
+                    }
+                    else if (eventItem is EventItem<T1, T2>)
+                    {
+                        TryRunAction(key, eventItem, value1,value2);
+                    }
+                    else if (eventItem is EventItem<T1>)
+                    {
+                        TryRunAction(key, eventItem, value1);
+                    }
+                    else if (eventItem is EventItem)
+                    {
+                        TryRunAction(key, eventItem);
+                    }
+                    else
+                    {
+                        NoMessageaction(key, "参数不正确");
+                    }
+                }
+            }
+            else
+            {
+                NoMessageaction(key, "未注册");
+            }
+            RunEndAction();
+        }
+        #endregion
+
+        #region TryRunActionInternal
+        private void TryRunAction(int eventKey, IEventItem eventItem)
+        {
+            isRuning = true;
+            try
+            {
+                (eventItem as EventItem).action.Invoke();
+            }
+            catch (Exception e)
+            {
+                MessageException(eventKey, e);
+            }
+            isRuning = false;
+        }
+
+        private void TryRunAction<T>(int eventKey, IEventItem eventItem,T value)
+        {
+            isRuning = true;
+            try
+            {
+                (eventItem as EventItem<T>).action.Invoke(value);
+            }
+            catch (Exception e)
+            {
+                MessageException(eventKey, e);
+            }
+            isRuning = false;
+        }
+
+        private void TryRunAction<T1, T2>(int eventKey, IEventItem eventItem, T1 value1, T2 value2)
+        {
+            isRuning = true;
+            try
+            {
+                (eventItem as EventItem<T1, T2>).action.Invoke(value1, value2);
+            }
+            catch (Exception e)
+            {
+                MessageException(eventKey, e);
+            }
+            isRuning = false;
+        }
+        private void TryRunAction<T1, T2, T3>(int eventKey, IEventItem eventItem, T1 value1, T2 value2, T3 value3)
+        {
+            isRuning = true;
+            try
+            {
+                (eventItem as EventItem<T1, T2, T3>).action.Invoke(value1, value2, value3);
+            }
+            catch (Exception e)
+            {
+                MessageException(eventKey, e);
+            }
+            isRuning = false;
+        }
+        private void TryRunAction<T1,T2,T3,T4>(int eventKey, IEventItem eventItem, T1 value1,T2 value2,T3 value3,T4 value4)
+        {
+            isRuning = true;
+            try
+            {
+                (eventItem as EventItem<T1,T2,T3,T4>).action.Invoke(value1,value2,value3,value4);
+            }
+            catch (Exception e)
+            {
+                MessageException(eventKey, e);
+            }
+            isRuning = false;
+        }
+
+        private void RunEndAction()
+        {
+            Action action = endAction;
+            endAction = null;
+            if (action != null){
+                action();
             }
         }
         #endregion
+
     }
 
 }

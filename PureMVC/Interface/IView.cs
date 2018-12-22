@@ -6,11 +6,11 @@ namespace PureMVC
 {
     public interface IView
     {
-        void RegisterObserver(int observerName, IObserverBase observer);
-        bool HasObserver(int observerName);
+        void RegisterObserver(int observeKey, IObserverBase observer);
+        bool HasObserver(int observeKey);
         void NotifyObservers<T>(INotification<T> noti);
         void NotifyObservers(INotification noti);
-        void RemoveObserver(int observerName, object notifyContext);
+        void RemoveObserver(int observeKey, object notifyContext);
 
         void RegisterMediator<T>(IMediator<T> mediator);
         void RemoveMediator<T>(IMediator<T> mediator);

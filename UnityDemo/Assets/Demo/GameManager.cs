@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PureMVC;
+using PureMVC.Unity;
+using System;
 
-public class GameManager : Director<GameManager>
+public class GameManager : StaticDirectManagement<GameManager>
 {
     protected override void OnFrameWorkLunched()
     {
-        Debug.Log("OnFrameWorkLunched!");
-        RegisterProxy(new ColorProxy(ProxyName.COLOR_BLOCK_GIRL,Color.red,Color.yellow,Color.cyan));
-        RegisterProxy(new ColorProxy(ProxyName.COLOR_BLOCK_BOY,Color.blue,Color.green,Color.gray));
-        RegisterCommand<ChangeColorCommand,int>(ObserverName.CHANGE_COLOR);
+        Regist(new ColorProxy(ProxyName.COLOR_BLOCK_GIRL,Color.red,Color.yellow,Color.cyan));
+        Regist(new ColorProxy(ProxyName.COLOR_BLOCK_BOY,Color.blue,Color.green,Color.gray));
+        Regist<ChangeColorCommand,int>(ObserverName.CHANGE_COLOR);
     }
 }

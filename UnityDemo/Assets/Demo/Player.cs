@@ -3,26 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
 public class Player : MonoBehaviour {
     public int key;
     public bool isMe;
-
     private NavMeshAgent agent;
-
-    private void Awake()
-    {
-        var render = GetComponent<Renderer>();
-        GameManager.Instence.RegisterMediator(new ColorMaterialMediator(key,render));
-        GameManager.Instence.RegisterMediator(new RandomScaleMediator(ObserverName.RANDOM_SCALE,transform));
-    }
 
     private void Start()
     {
+        var render = GetComponent<Renderer>();
+        GameManager.Regist(new ColorMaterialMediator(key,render));
+        GameManager.Regist(new RandomScaleMediator(ObserverName.RANDOM_SCALE,transform));
+  
         if (isMe)
         {
             agent = GetComponent<NavMeshAgent>();
-            GameManager.Instence.eventDispatch.RegistEvent<Vector3>(EventName.MOVE_PLAYER, MovePlayer);
+            GameManager.Regist<Vector3>(EventName.MOVE_PLAYER, MovePlayer);
         }
     }
 

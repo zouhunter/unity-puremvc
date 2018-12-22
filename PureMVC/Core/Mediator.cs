@@ -10,7 +10,7 @@ namespace PureMVC
             this.acceptors = acceptors;
         }
         public virtual IList<int> Acceptors { get { return acceptors; } }
-        public abstract void HandleNotification(int observerName);
+        public abstract void HandleNotification(int observeKey);
     }
 
     public abstract class Mediator<T>: IMediator<T>
@@ -21,7 +21,7 @@ namespace PureMVC
             this.acceptors = acceptors;
         }
         public virtual IList<int> Acceptors { get { return acceptors; } }
-        public abstract void HandleNotification(int observerName, T notification);
+        public abstract void HandleNotification(int observeKey, T notification);
 
     }
 }

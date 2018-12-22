@@ -6,34 +6,22 @@ using System.Collections.Generic;
 using System;
 namespace PureMVC.Unity
 {
-    public abstract class Program : MonoBehaviour
+    public abstract class Program<GameManager>: MonoBehaviour where GameManager: DirectManagement<GameManager>,new()
     {
-        protected static Program _abstruct;
-        public static Program Current
-        {
-            get
-            {
-                return _abstruct;
-            }
-        }
-        public Facade facade { get; protected set; }
+        protected DirectManagement<GameManager> directManager;
+
         protected virtual void Awake()
         {
-            _abstruct = this;
+            directManager =  DirectManagement<GameManager>.Instence;
+            directManager.RegistProgram(this);
         }
-    }
-    public abstract class Program<S>: Program where S: Director<S>,new()
-    {
-        protected override void Awake()
+        protected virtual void OnDestroy()
         {
-            base.Awake();
-            var director =  Director<S>.Instence;
-            director.StartGame();
-            facade = director;
+            directManager.RemoveProgram(this);
         }
         protected virtual void OnApplicationQuit()
         {
-             Director<S>.Instence.OnApplicationQuit(); 
+            directManager.OnApplicationQuit();
         }
     }
 

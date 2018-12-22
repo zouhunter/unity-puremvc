@@ -9,13 +9,13 @@ namespace PureMVC
     public class Notification<T> : INotification<T>
     {
         public T Body { get; set; }
-        public int ObserverName { get; set; }
+        public int ObserverKey { get; set; }
         public new string ToString
         {
             get
             {
                 string msg = "";
-                msg += "\nObserverName:" + ObserverName.ToString();
+                msg += "\nObserverName:" + ObserverKey.ToString();
                 msg += "\nBody:" + ((Body == null) ? "null" : Body.ToString());
                 return msg;
             }
@@ -26,7 +26,7 @@ namespace PureMVC
         public virtual void Clear()
         {
             Body = default(T);
-            ObserverName = -1;
+            ObserverKey = -1;
             IsUsing = false;
         }
 
@@ -47,7 +47,7 @@ namespace PureMVC
             Notification<T> lInstance = sPool.Allocate();
             if (lInstance == null) { lInstance = new Notification<T>(); }
 
-            lInstance.ObserverName = ObserverName;
+            lInstance.ObserverKey = ObserverName;
             lInstance.Body = body;
 
             lInstance.IsUsing = true;
