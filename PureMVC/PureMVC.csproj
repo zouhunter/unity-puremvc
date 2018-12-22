@@ -62,8 +62,7 @@
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnityFacade\Director.cs" />
-    <Compile Include="UnityFacade\EventHold.cs" />
-    <Compile Include="UnityFacade\GameObjectPool.cs" />
+    <Compile Include="UnityFacade\EventDispatcher.cs" />
     <Compile Include="UnityFacade\Program.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

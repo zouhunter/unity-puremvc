@@ -6,6 +6,7 @@ namespace PureMVC
         protected IModel m_model;
         protected IView m_view;
         protected IController m_controller;
+        
         protected Action<int> notifyNotHandle { get; set; }
         public Facade()
         {

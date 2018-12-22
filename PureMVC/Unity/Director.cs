@@ -2,7 +2,7 @@
 using System.Reflection;
 using System;
 
-namespace PureMVC
+namespace PureMVC.Unity
 {
     public abstract class  Director<T> : Facade where T :  Director<T>,new()
     {
@@ -10,8 +10,8 @@ namespace PureMVC
         private static object lockHelper = new object();
         private static bool isQuit = false;
         private bool isOn = false;
-        private EventHold _eventDispatch;
-        public EventHold eventDispatch { get { return _eventDispatch; } }
+        private EventDispatcher _eventDispatch;
+        public EventDispatcher eventDispatch { get { return _eventDispatch; } }
         public static T Instence
         {
             get
@@ -36,7 +36,7 @@ namespace PureMVC
             {
                 notifyNotHandle = OnNotifyNotHandle;
 
-                _eventDispatch = new EventHold();
+                _eventDispatch = new EventDispatcher();
                 _eventDispatch.messageNoHandle = OnEventNotHandled;
 
                 isOn = true;

@@ -113,12 +113,12 @@ namespace PureMVC
     }
 
 
-    public class EventHold
+    public class EventDispatcher
     {
         protected IView m_view;
         protected IDictionary<int, List<IEventItem>> m_observerMap;
         internal Action<int> messageNoHandle { get; set; }
-        public EventHold()
+        public EventDispatcher()
         {
             m_observerMap = new Dictionary<int, List<IEventItem>>();
         }
@@ -258,9 +258,6 @@ namespace PureMVC
             }
         }
         #endregion
-
-
-
     }
 
 }
