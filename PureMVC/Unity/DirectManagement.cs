@@ -10,7 +10,7 @@ namespace PureMVC.Unity
         protected static GameManager instance = default(GameManager);
         private static object lockHelper = new object();
         private static bool isQuit = false;
-
+        public bool connected { get; protected set; }
         private EventDispatcher _eventDispatch;
         public EventDispatcher eventDispatch { get { return _eventDispatch; } }
         protected Program<GameManager> _program;
@@ -41,6 +41,7 @@ namespace PureMVC.Unity
         {
             if (program != null)
             {
+                connected = true;
                 this._program = program;
             }
         }
@@ -48,6 +49,7 @@ namespace PureMVC.Unity
         {
             if (program == this.program)
             {
+                connected = false;
                 this._program = null;
             }
         }
@@ -64,27 +66,11 @@ namespace PureMVC.Unity
             Debug.LogWarning("【Unhandled Notify】 ID: " + observerID);
         }
         protected abstract void OnFrameWorkLunched();
-        protected static void AssignmentPropertiesID<Tp>()
-        {
-            var properties = typeof(Tp).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty);
-
-            for (int i = 0; i < properties.Length; i++)
-            {
-                properties[i].SetValue(null, i, null);
-            }
-        }
-        protected static void AssignmentFieldsID<Tp>()
-        {
-            var fields = typeof(Tp).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField);
-
-            for (int i = 0; i < fields.Length; i++)
-            {
-                fields[i].SetValue(null, i, null);
-            }
-        }
-        internal void OnApplicationQuit()
+        protected abstract void OnApplicationQuit();
+        internal void ApplicationQuit()
         {
             isQuit = true;
+            OnApplicationQuit();
         }
     }
 }

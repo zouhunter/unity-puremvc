@@ -21,7 +21,7 @@ namespace PureMVC.Unity
         }
         protected virtual void OnApplicationQuit()
         {
-            directManager.OnApplicationQuit();
+            directManager.ApplicationQuit();
         }
     }
 

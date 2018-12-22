@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using System.Reflection;
 
 namespace PureMVC.Unity
 {
@@ -150,6 +151,27 @@ namespace PureMVC.Unity
         public static void Notify<T>(int observerKey,T  argument)
         {
             Instence.SendNotification(observerKey,argument);
+        }
+        #endregion
+
+        #region ArgumentHelper
+        protected static void AssignmentPropertiesID<Tp>()
+        {
+            var properties = typeof(Tp).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty);
+
+            for (int i = 0; i < properties.Length; i++)
+            {
+                properties[i].SetValue(null, i, null);
+            }
+        }
+        protected static void AssignmentFieldsID<Tp>()
+        {
+            var fields = typeof(Tp).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.GetField);
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                fields[i].SetValue(null, i, null);
+            }
         }
         #endregion
     }

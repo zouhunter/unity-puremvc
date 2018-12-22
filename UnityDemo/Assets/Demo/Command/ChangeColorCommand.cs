@@ -11,12 +11,12 @@ public class ChangeColorCommand : Command<int>
     {
         if (colorKeys.Length < id || id < 0) return;
 
-        var proxy = GameManager.Instence.RetrieveProxy<Color[]>(colorKeys[id]);
+        var proxy = GameManager.Retrive_Proxy<Color[]>(colorKeys[id]);
 
         for (int i = 0; i < proxy.Data.Length; i++)
         {
             var color = proxy.Data[i];
-            GameManager.Instence.SendNotification(ObserverName.CHANGE_COLOR_UI, new KeyValuePair<int, Color>(i, color));
+            GameManager.Notify(ObserverName.CHANGE_COLOR_UI, new KeyValuePair<int, Color>(i, color));
         }
     }
 }
