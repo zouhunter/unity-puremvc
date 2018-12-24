@@ -39,20 +39,31 @@ namespace PureMVC.Unity
         }
         internal void RegistProgram(Program<GameManager> program)
         {
+            if(this.program != null)
+            {
+                OnProgramRemoved(this.program);
+                this._program = null;
+                connected = false;
+            }
+
             if (program != null)
             {
                 connected = true;
                 this._program = program;
+                OnProgramRegisted(program);
             }
         }
+
         internal void RemoveProgram(Program<GameManager> program)
         {
-            if (program == this.program)
+            if(program != null && program == this.program)
             {
-                connected = false;
+                OnProgramRemoved(program);
                 this._program = null;
+                connected = false;
             }
         }
+
         protected virtual void OnEventExecuteException(int eventID, Exception exception)
         {
             Debug.LogWarningFormat("【Exception Event】 ID: {0} Detail: {1}", eventID, exception.Message);
@@ -66,11 +77,11 @@ namespace PureMVC.Unity
             Debug.LogWarning("【Unhandled Notify】 ID: " + observerID);
         }
         protected abstract void OnFrameWorkLunched();
-        protected abstract void OnApplicationQuit();
+        protected abstract void OnProgramRegisted(Program<GameManager> program);
+        protected abstract void OnProgramRemoved(Program<GameManager> program);
         internal void ApplicationQuit()
         {
             isQuit = true;
-            OnApplicationQuit();
         }
     }
 }
