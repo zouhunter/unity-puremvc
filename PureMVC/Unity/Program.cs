@@ -7,34 +7,49 @@ using System;
 
 namespace PureMVC.Unity
 {
-    public abstract class Program<GameManager>: MonoBehaviour where GameManager: DirectManagement<GameManager>,new()
+    public abstract class Program<GameManager> : MonoBehaviour where GameManager : DirectManagement<GameManager>, new()
     {
         protected GameManager directManager;
-        public delegate void ApplicationBoolCallback(bool status);
-        public delegate void ApplicationVoidCallback();
-        public ApplicationVoidCallback onApplicationQuit = null;
-        public ApplicationBoolCallback onApplicationPause = null;
-        public ApplicationBoolCallback onApplicationFocus = null;
-        public ApplicationVoidCallback onApplicationUpdate = null;
-        public ApplicationVoidCallback onApplicationFixedUpdate = null;
-        public ApplicationVoidCallback onApplicationOnGUI = null;
-        public ApplicationVoidCallback onApplicationOnDrawGizmos = null;
-        public ApplicationVoidCallback onApplicationLateUpdate = null;
+        public delegate void ProgramBoolCallback(bool status);
+        public delegate void ProgramVoidCallback();
+        public delegate void ExceptionCallBack(Exception e);
+        public event ProgramBoolCallback onApplicationPause;
+        public event ProgramBoolCallback onApplicationFocus;
+        public event ProgramVoidCallback onApplicationQuit;
+        public event ProgramVoidCallback onApplicationUpdate;
+        public event ProgramVoidCallback onApplicationFixedUpdate;
+        public event ProgramVoidCallback onApplicationLateUpdate;
+        public event ExceptionCallBack onEventExcption;
+
         protected virtual void Awake()
         {
-            directManager =  DirectManagement<GameManager>.Instence;
+            directManager = DirectManagement<GameManager>.Instence;
             directManager.RegistProgram(this);
         }
         protected virtual void OnDestroy()
         {
             directManager.RemoveProgram(this);
         }
-       
+
         protected virtual void Update()
         {
             if (onApplicationUpdate != null)
             {
-                onApplicationUpdate();
+                try
+                {
+                    onApplicationUpdate();
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
 
@@ -42,7 +57,21 @@ namespace PureMVC.Unity
         {
             if (onApplicationLateUpdate != null)
             {
-                onApplicationLateUpdate();
+                try
+                {
+                    onApplicationLateUpdate();
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
 
@@ -50,41 +79,65 @@ namespace PureMVC.Unity
         {
             if (onApplicationFixedUpdate != null)
             {
-                onApplicationFixedUpdate();
+                try
+                {
+                    onApplicationFixedUpdate();
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
-
-        protected virtual void OnGUI()
-        {
-            if (onApplicationOnGUI != null)
-                onApplicationOnGUI();
-        }
-
-        protected virtual void OnDrawGizmos()
-        {
-            if (onApplicationOnDrawGizmos != null)
-                onApplicationOnDrawGizmos();
-        }
-
         protected virtual void OnApplicationQuit()
         {
             directManager.ApplicationQuit();
 
             if (onApplicationQuit != null)
             {
-                onApplicationQuit();
+                try
+                {
+                    onApplicationQuit();
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
-
-        /*
-         * 强制暂停时，先 OnApplicationPause，后 OnApplicationFocus
-         * 重新“启动”游戏时，先OnApplicationFocus，后 OnApplicationPause
-         */
         protected virtual void OnApplicationPause(bool pauseStatus)
-        {
+        { 
             if (onApplicationPause != null)
             {
-                onApplicationPause(pauseStatus);
+                try
+                {
+                    onApplicationPause(pauseStatus);
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
 
@@ -92,7 +145,21 @@ namespace PureMVC.Unity
         {
             if (onApplicationFocus != null)
             {
-                onApplicationFocus(focusStatus);
+                try
+                {
+                    onApplicationFocus(focusStatus);
+                }
+                catch (Exception e)
+                {
+                    if (onEventExcption != null)
+                    {
+                        onEventExcption.Invoke(e);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                }
             }
         }
 
