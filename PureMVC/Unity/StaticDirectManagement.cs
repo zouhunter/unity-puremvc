@@ -75,74 +75,7 @@ namespace PureMVC.Unity
         }
 
         #endregion
-
-        #region Events
-        public static void Regist(int eventKey, Action callBack)
-        {
-            Instence.eventDispatch.RegistEvent(eventKey, callBack);
-        }
-        public static void Regist<T>(int eventKey, Action<T> callBack)
-        {
-            Instence.eventDispatch.RegistEvent(eventKey, callBack);
-        }
-        public static void Regist<T1,T2>(int eventKey, Action<T1,T2> callBack)
-        {
-            Instence.eventDispatch.RegistEvent(eventKey, callBack);
-        }
-        public static void Regist<T1, T2,T3>(int eventKey, Action<T1, T2,T3> callBack)
-        {
-            Instence.eventDispatch.RegistEvent(eventKey, callBack);
-        }
-        public static void Regist<T1, T2, T3,T4>(int eventKey, Action<T1, T2, T3,T4> callBack)
-        {
-            Instence.eventDispatch.RegistEvent(eventKey, callBack);
-        }
-        public static void Remove_Events(int eventKey)
-        {
-            Instence.eventDispatch.RemoveEvents(eventKey);
-        }
-        public static void Remove_Event(int eventKey,Action callBack)
-        {
-            Instence.eventDispatch.RemoveEvent(eventKey, callBack);
-        }
-        public static void Remove_Event<T>(int eventKey, Action<T> callBack)
-        {
-            Instence.eventDispatch.RemoveEvent(eventKey, callBack);
-        }
-        public static void Remove_Event<T1,T2>(int eventKey, Action<T1,T2> callBack)
-        {
-            Instence.eventDispatch.RemoveEvent<T1,T2>(eventKey, callBack);
-        }
-        public static void Remove_Event<T1, T2,T3>(int eventKey, Action<T1, T2,T3> callBack)
-        {
-            Instence.eventDispatch.RemoveEvent<T1, T2,T3>(eventKey, callBack);
-        }
-        public static void Remove_Event<T1, T2, T3,T4>(int eventKey, Action<T1, T2, T3,T4> callBack)
-        {
-            Instence.eventDispatch.RemoveEvent<T1, T2, T3,T4>(eventKey, callBack);
-        }
-        public static void Execute(int eventKey)
-        {
-            Instence.eventDispatch.ExecuteEvents(eventKey);
-        }
-        public static void Execute<T1>(int eventKey, T1 value1)
-        {
-            Instence.eventDispatch.ExecuteEvents(eventKey, value1);
-        }
-        public static void Execute<T1, T2>(int eventKey, T1 value1, T2 value2)
-        {
-            Instence.eventDispatch.ExecuteEvents(eventKey, value1, value2);
-        }
-        public static void Execute<T1, T2, T3>(int eventKey, T1 value1, T2 value2, T3 value3)
-        {
-            Instence.eventDispatch.ExecuteEvents(eventKey, value1, value2, value3);
-        }
-        public static void Execute<T1,T2,T3,T4>(int eventKey,T1 value1,T2 value2,T3 value3,T4 value4 )
-        {
-            Instence.eventDispatch.ExecuteEvents(eventKey,value1,value2,value3,value4);
-        }
-        #endregion
-
+        
         #region Notify
         public static void Notify(int observerKey)
         {

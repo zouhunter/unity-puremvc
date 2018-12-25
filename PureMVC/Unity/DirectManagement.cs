@@ -11,8 +11,6 @@ namespace PureMVC.Unity
         private static object lockHelper = new object();
         private static bool isQuit = false;
         public bool connected { get; protected set; }
-        private EventDispatcher _eventDispatch;
-        public EventDispatcher eventDispatch { get { return _eventDispatch; } }
         protected Program<GameManager> _program;
         public Program<GameManager> program { get { return _program; } }
         public static GameManager Instence
@@ -27,9 +25,6 @@ namespace PureMVC.Unity
                         {
                             instance = new GameManager();
                             instance.notifyNotHandle = instance.OnNotifyNotHandle;
-                            instance._eventDispatch = new EventDispatcher();
-                            instance._eventDispatch.messageNoHandle = instance.OnEventNotHandled;
-                            instance._eventDispatch.messageExceptionHandle = instance.OnEventExecuteException;
                             instance.OnFrameWorkLunched();
                         }
                     }
@@ -39,7 +34,7 @@ namespace PureMVC.Unity
         }
         internal void RegistProgram(Program<GameManager> program)
         {
-            if(this.program != null)
+            if (this.program != null)
             {
                 OnProgramRemoved(this.program);
                 this._program = null;
@@ -53,24 +48,14 @@ namespace PureMVC.Unity
                 OnProgramRegisted(program);
             }
         }
-
         internal void RemoveProgram(Program<GameManager> program)
         {
-            if(program != null && program == this.program)
+            if (program != null && program == this.program)
             {
                 OnProgramRemoved(program);
                 this._program = null;
                 connected = false;
             }
-        }
-
-        protected virtual void OnEventExecuteException(int eventID, Exception exception)
-        {
-            Debug.LogWarningFormat("【Exception Event】 ID: {0} Detail: {1}", eventID, exception.Message);
-        }
-        protected virtual void OnEventNotHandled(int eventID, string err)
-        {
-            Debug.LogWarningFormat("【Unhandled Event】 ID: {0} Detail: {1}", eventID, err);
         }
         protected virtual void OnNotifyNotHandle(int observerID)
         {

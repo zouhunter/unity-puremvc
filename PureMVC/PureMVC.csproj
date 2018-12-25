@@ -62,7 +62,6 @@
     <Compile Include="Interface\IView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unity\DirectManagement.cs" />
-    <Compile Include="Unity\EventDispatcher.cs" />
     <Compile Include="Unity\Program.cs" />
     <Compile Include="Unity\StaticDirectManagement.cs" />
   </ItemGroup>
