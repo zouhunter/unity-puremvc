@@ -5,126 +5,17 @@ using System.Text;
 
 namespace PureMVC
 {
-    public interface IEventItem
-    {
-        object Action { get; }
-        void Release();
-    }
-
-    public class EventItem : IEventItem
-    {
-        public Action action;
-        public object Action
-        {
-            get { return action; }
-        }
-        private static ObjectPool<EventItem> sPool = new ObjectPool<EventItem>(1, 1);
-
-        public static EventItem Allocate(Action action)
-        {
-            var item = sPool.Allocate();
-            item.action = action;
-            return item;
-        }
-        public void Release()
-        {
-            sPool.Release(this);
-        }
-    }
-
-    public class EventItem<T> : IEventItem
-    {
-        public Action<T> action;
-        public object Action
-        {
-            get { return action; }
-        }
-        private static ObjectPool<EventItem<T>> sPool = new ObjectPool<EventItem<T>>(1, 1);
-        public static EventItem<T> Allocate(Action<T> action)
-        {
-            var item = sPool.Allocate();
-            item.action = action;
-            return item;
-        }
-        public void Release()
-        {
-            sPool.Release(this);
-        }
-    }
-
-    public class EventItem<T1, T2> : IEventItem
-    {
-        public Action<T1, T2> action;
-        public object Action
-        {
-            get { return action; }
-        }
-        private static ObjectPool<EventItem<T1, T2>> sPool = new ObjectPool<EventItem<T1, T2>>(1, 1);
-        public static EventItem<T1, T2> Allocate(Action<T1, T2> action)
-        {
-            var item = sPool.Allocate();
-            item.action = action;
-            return item;
-        }
-        public void Release()
-        {
-            sPool.Release(this);
-        }
-    }
-
-    public class EventItem<T1, T2, T3> : IEventItem
-    {
-        public Action<T1, T2, T3> action;
-        public object Action
-        {
-            get { return action; }
-        }
-        private static ObjectPool<EventItem<T1, T2, T3>> sPool = new ObjectPool<EventItem<T1, T2, T3>>(1, 1);
-        public static EventItem<T1, T2, T3> Allocate(Action<T1, T2, T3> action)
-        {
-            var item = sPool.Allocate();
-            item.action = action;
-            return item;
-        }
-        public void Release()
-        {
-            sPool.Release(this);
-        }
-    }
-
-    public class EventItem<T1, T2, T3, T4> : IEventItem
-    {
-        public Action<T1, T2, T3, T4> action;
-        public object Action
-        {
-            get { return action; }
-        }
-        private static ObjectPool<EventItem<T1, T2, T3, T4>> sPool = new ObjectPool<EventItem<T1, T2, T3, T4>>(1, 1);
-        public static EventItem<T1, T2, T3, T4> Allocate(Action<T1, T2, T3, T4> action)
-        {
-            var item = sPool.Allocate();
-            item.action = action;
-            return item;
-        }
-        public void Release()
-        {
-            sPool.Release(this);
-        }
-    }
-
-
     public class EventDispatcher
     {
-        protected IView m_view;
-        protected IDictionary<int, List<IEventItem>> m_observerMap;
+        protected readonly IDictionary<int, List<MulticastDelegate>> m_observerMap;
         internal Action<int, string> messageNoHandle { get; set; }
         internal Action<int, Exception> messageExceptionHandle { get; set; }
-        private bool isRuning = false;
-        private event Action endAction;
+        protected bool isRuning = false;
+        protected event Action endAction;
 
         public EventDispatcher()
         {
-            m_observerMap = new Dictionary<int, List<IEventItem>>();
+            m_observerMap = new Dictionary<int, List<MulticastDelegate>>();
         }
         protected void NoMessageaction(int eventKey, string err)
         {
@@ -142,43 +33,38 @@ namespace PureMVC
         public void RegistEvent(int key, Action action)
         {
             if (action == null) return;
-            EventItem observer = EventItem.Allocate(action);
-            RegistEvent(key, observer);
+            RegistEvent(key, action);
         }
         public void RegistEvent<T>(int key, Action<T> action)
         {
             if (action == null) return;
-            EventItem<T> observer = EventItem<T>.Allocate(action);
-            RegistEvent(key, observer);
+            RegistEvent(key, action);
         }
         public void RegistEvent<T1, T2>(int key, Action<T1, T2> action)
         {
             if (action == null) return;
-            EventItem<T1, T2> observer = EventItem<T1, T2>.Allocate(action);
-            RegistEvent(key, observer);
+            RegistEvent(key, action);
         }
         public void RegistEvent<T1, T2, T3>(int key, Action<T1, T2, T3> action)
         {
             if (action == null) return;
-            EventItem<T1, T2, T3> observer = EventItem<T1, T2, T3>.Allocate(action);
-            RegistEvent(key, observer);
+            RegistEvent(key, action);
         }
         public void RegistEvent<T1, T2, T3, T4>(int key, Action<T1, T2, T3, T4> action)
         {
             if (action == null) return;
-            EventItem<T1, T2, T3, T4> observer = EventItem<T1, T2, T3, T4>.Allocate(action);
-            RegistEvent(key, observer);
+            RegistEvent(key, action);
         }
 
-        private void RegistEvent(int key, IEventItem observer)
+        protected void RegistEvent(int key, MulticastDelegate observer)
         {
             if (m_observerMap.ContainsKey(key) && m_observerMap[key] == null)
             {
-                m_observerMap[key] = new List<IEventItem>();
+                m_observerMap[key] = new List<MulticastDelegate>();
             }
             else
             {
-                m_observerMap.Add(key, new List<IEventItem>() );
+                m_observerMap.Add(key, new List<MulticastDelegate>() );
             }
 
             if(isRuning)
@@ -204,37 +90,35 @@ namespace PureMVC
         }
         public void RemoveEvent(int key, Action action)
         {
-            RemoveEvent(key, (System.Object)action);
+            RemoveEvent(key, action);
         }
         public void RemoveEvent<T>(int key, Action<T> action)
         {
-            RemoveEvent(key, (System.Object)action);
+            RemoveEvent(key, action);
         }
         public void RemoveEvent<T1, T2>(int key, Action<T1, T2> action)
         {
-            RemoveEvent(key, (System.Object)action);
+            RemoveEvent(key, action);
         }
         public void RemoveEvent<T1, T2, T3>(int key, Action<T1, T2, T3> action)
         {
-            RemoveEvent(key, (System.Object)action);
+            RemoveEvent(key,action);
         }
         public void RemoveEvent<T1, T2, T3, T4>(int key, Action<T1, T2, T3, T4> action)
         {
-            RemoveEvent(key, (System.Object)action);
+            RemoveEvent(key, action);
         }
 
-        private bool RemoveEvent(int key, object action)
+        protected bool RemoveEvent(int key, MulticastDelegate action)
         {
             if (action == null) return false;
 
             if (m_observerMap.ContainsKey(key))
             {
                 var list = m_observerMap[key];
-                var item = list.Find(x => object.Equals(x.Action, action));
-                if (item != null)
+                if (list.Contains(action))
                 {
-                    item.Release();
-                    list.Remove(item);
+                    list.Remove(action);
                 }
                 else
                 {
@@ -253,10 +137,10 @@ namespace PureMVC
                 var list = m_observerMap[key];
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var eventItem = list[i];
-                    if (eventItem is EventItem)
+                    var Action = list[i];
+                    if (Action is Action)
                     {
-                        TryRunAction(key, eventItem);
+                        TryRunAction(key, Action);
                     }
                     else
                     {
@@ -279,15 +163,15 @@ namespace PureMVC
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var eventItem = list[i];
+                    var Action = list[i];
 
-                    if (eventItem is EventItem<T>)
+                    if (Action is Action<T>)
                     {
-                        TryRunAction(key, eventItem, value);
+                        TryRunAction(key, Action, value);
                     }
-                    else if (eventItem is EventItem)
+                    else if (Action is Action)
                     {
-                        TryRunAction(key, eventItem);
+                        TryRunAction(key, Action);
                     }
                     else
                     {
@@ -309,19 +193,19 @@ namespace PureMVC
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var eventItem = list[i];
+                    var Action = list[i];
 
-                    if (eventItem is EventItem<T1, T2>)
+                    if (Action is Action<T1, T2>)
                     {
-                        TryRunAction(key, eventItem, value1, value2);
+                        TryRunAction(key, Action, value1, value2);
                     }
-                    else if (eventItem is EventItem<T1>)
+                    else if (Action is Action<T1>)
                     {
-                        TryRunAction(key, eventItem, value1);
+                        TryRunAction(key, Action, value1);
                     }
-                    else if (eventItem is EventItem)
+                    else if (Action is Action)
                     {
-                        TryRunAction(key, eventItem);
+                        TryRunAction(key, Action);
                     }
                     else
                     {
@@ -343,22 +227,22 @@ namespace PureMVC
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var eventItem = list[i];
-                    if (eventItem is EventItem<T1, T2, T3>)
+                    var Action = list[i];
+                    if (Action is Action<T1, T2, T3>)
                     {
-                        TryRunAction(key, eventItem, value1, value2, value3);
+                        TryRunAction(key, Action, value1, value2, value3);
                     }
-                    else if (eventItem is EventItem<T1, T2>)
+                    else if (Action is Action<T1, T2>)
                     {
-                        TryRunAction(key, eventItem, value1, value2);
+                        TryRunAction(key, Action, value1, value2);
                     }
-                    else if (eventItem is EventItem<T1>)
+                    else if (Action is Action<T1>)
                     {
-                        TryRunAction(key, eventItem, value1);
+                        TryRunAction(key, Action, value1);
                     }
-                    else if (eventItem is EventItem)
+                    else if (Action is Action)
                     {
-                        TryRunAction(key, eventItem);
+                        TryRunAction(key, Action);
                     }
                     else
                     {
@@ -380,26 +264,26 @@ namespace PureMVC
 
                 for (int i = 0; i < list.Count; i++)
                 {
-                    var eventItem = list[i];
-                    if (eventItem is EventItem<T1, T2, T3,T4>)
+                    var Action = list[i];
+                    if (Action is Action<T1, T2, T3,T4>)
                     {
-                        TryRunAction(key, eventItem, value1, value2, value3,value4);
+                        TryRunAction(key, Action, value1, value2, value3,value4);
                     }
-                    else if (eventItem is EventItem<T1, T2, T3>)
+                    else if (Action is Action<T1, T2, T3>)
                     {
-                        TryRunAction(key, eventItem, value1, value2,value3);
+                        TryRunAction(key, Action, value1, value2,value3);
                     }
-                    else if (eventItem is EventItem<T1, T2>)
+                    else if (Action is Action<T1, T2>)
                     {
-                        TryRunAction(key, eventItem, value1,value2);
+                        TryRunAction(key, Action, value1,value2);
                     }
-                    else if (eventItem is EventItem<T1>)
+                    else if (Action is Action<T1>)
                     {
-                        TryRunAction(key, eventItem, value1);
+                        TryRunAction(key, Action, value1);
                     }
-                    else if (eventItem is EventItem)
+                    else if (Action is Action)
                     {
-                        TryRunAction(key, eventItem);
+                        TryRunAction(key, Action);
                     }
                     else
                     {
@@ -416,12 +300,12 @@ namespace PureMVC
         #endregion
 
         #region TryRunActionInternal
-        private void TryRunAction(int eventKey, IEventItem eventItem)
+        protected void TryRunAction(int eventKey, object Action)
         {
             isRuning = true;
             try
             {
-                (eventItem as EventItem).action.Invoke();
+                (Action as Action).Invoke();
             }
             catch (Exception e)
             {
@@ -430,12 +314,12 @@ namespace PureMVC
             isRuning = false;
         }
 
-        private void TryRunAction<T>(int eventKey, IEventItem eventItem,T value)
+        protected void TryRunAction<T>(int eventKey, object Action,T value)
         {
             isRuning = true;
             try
             {
-                (eventItem as EventItem<T>).action.Invoke(value);
+                (Action as Action<T>).Invoke(value);
             }
             catch (Exception e)
             {
@@ -444,12 +328,12 @@ namespace PureMVC
             isRuning = false;
         }
 
-        private void TryRunAction<T1, T2>(int eventKey, IEventItem eventItem, T1 value1, T2 value2)
+        protected void TryRunAction<T1, T2>(int eventKey, object Action, T1 value1, T2 value2)
         {
             isRuning = true;
             try
             {
-                (eventItem as EventItem<T1, T2>).action.Invoke(value1, value2);
+                (Action as Action<T1, T2>).Invoke(value1, value2);
             }
             catch (Exception e)
             {
@@ -457,12 +341,12 @@ namespace PureMVC
             }
             isRuning = false;
         }
-        private void TryRunAction<T1, T2, T3>(int eventKey, IEventItem eventItem, T1 value1, T2 value2, T3 value3)
+        protected void TryRunAction<T1, T2, T3>(int eventKey, object Action, T1 value1, T2 value2, T3 value3)
         {
             isRuning = true;
             try
             {
-                (eventItem as EventItem<T1, T2, T3>).action.Invoke(value1, value2, value3);
+                (Action as Action<T1, T2, T3>).Invoke(value1, value2, value3);
             }
             catch (Exception e)
             {
@@ -470,12 +354,12 @@ namespace PureMVC
             }
             isRuning = false;
         }
-        private void TryRunAction<T1,T2,T3,T4>(int eventKey, IEventItem eventItem, T1 value1,T2 value2,T3 value3,T4 value4)
+        protected void TryRunAction<T1,T2,T3,T4>(int eventKey, object Action, T1 value1,T2 value2,T3 value3,T4 value4)
         {
             isRuning = true;
             try
             {
-                (eventItem as EventItem<T1,T2,T3,T4>).action.Invoke(value1,value2,value3,value4);
+                (Action as Action<T1,T2,T3,T4>).Invoke(value1,value2,value3,value4);
             }
             catch (Exception e)
             {
@@ -484,7 +368,7 @@ namespace PureMVC
             isRuning = false;
         }
 
-        private void RunEndAction()
+        protected void RunEndAction()
         {
             Action action = endAction;
             endAction = null;
