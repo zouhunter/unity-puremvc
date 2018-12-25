@@ -1,14 +1,75 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
+﻿using UnityEngine;
 using System.Reflection;
+using System;
+using System.Collections.Generic;
 
 namespace PureMVC.Unity
 {
-    public abstract class StaticDirectManagement<GameManager> : DirectManagement<GameManager> where GameManager : StaticDirectManagement<GameManager>, new()
+    public abstract class Management<GameManager> : Facade where GameManager : Management<GameManager>, new()
     {
+        protected static GameManager instance = default(GameManager);
+        private static object lockHelper = new object();
+        private static bool isQuit = false;
+        public bool connected { get; protected set; }
+        protected Program<GameManager> _program;
+        public Program<GameManager> program { get { return _program; } }
+        public static GameManager Instence
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    lock (lockHelper)
+                    {
+                        if (instance == null && !isQuit)
+                        {
+                            instance = new GameManager();
+                            instance.notifyNotHandle = instance.OnNotifyNotHandle;
+                            instance.OnFrameWorkLunched();
+                        }
+                    }
+                }
+                return instance;
+            }
+        }
+        internal void RegistProgram(Program<GameManager> program)
+        {
+            if (this.program != null)
+            {
+                OnProgramRemoved(this.program);
+                this._program = null;
+                connected = false;
+            }
+
+            if (program != null)
+            {
+                connected = true;
+                this._program = program;
+                OnProgramRegisted(program);
+            }
+        }
+        internal void RemoveProgram(Program<GameManager> program)
+        {
+            if (program != null && program == this.program)
+            {
+                OnProgramRemoved(program);
+                this._program = null;
+                connected = false;
+            }
+        }
+        protected virtual void OnNotifyNotHandle(int observerID)
+        {
+            Debug.LogWarning("【Unhandled Notify】 ID: " + observerID);
+        }
+        protected abstract void OnFrameWorkLunched();
+        protected abstract void OnProgramRegisted(Program<GameManager> program);
+        protected abstract void OnProgramRemoved(Program<GameManager> program);
+        internal void ApplicationQuit()
+        {
+            isQuit = true;
+        }
+
+
         #region Mediator
         public static void Regist(IMediator medator)
         {
@@ -65,7 +126,7 @@ namespace PureMVC.Unity
         {
             return Instence.RetrieveProxy<T>(proxyKey);
         }
-        public static void Retrive_Proxy<T>(int proxyKey,Action<IProxy<T>> ontrive)
+        public static void Retrive_Proxy<T>(int proxyKey, Action<IProxy<T>> ontrive)
         {
             Instence.RetrieveProxy<T>(proxyKey, ontrive);
         }
@@ -75,15 +136,15 @@ namespace PureMVC.Unity
         }
 
         #endregion
-        
+
         #region Notify
         public static void Notify(int observerKey)
         {
             Instence.SendNotification(observerKey);
         }
-        public static void Notify<T>(int observerKey,T  argument)
+        public static void Notify<T>(int observerKey, T argument)
         {
-            Instence.SendNotification(observerKey,argument);
+            Instence.SendNotification(observerKey, argument);
         }
         #endregion
 

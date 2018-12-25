@@ -7,7 +7,7 @@ using System;
 
 namespace PureMVC.Unity
 {
-    public abstract class Program<GameManager> : MonoBehaviour where GameManager : DirectManagement<GameManager>, new()
+    public abstract class Program<GameManager> : MonoBehaviour where GameManager : Management<GameManager>, new()
     {
         protected GameManager directManager;
         public delegate void ProgramBoolCallback(bool status);
@@ -23,7 +23,7 @@ namespace PureMVC.Unity
 
         protected virtual void Awake()
         {
-            directManager = DirectManagement<GameManager>.Instence;
+            directManager = Management<GameManager>.Instence;
             directManager.RegistProgram(this);
         }
         protected virtual void OnDestroy()
