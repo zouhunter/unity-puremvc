@@ -7,6 +7,5 @@ namespace PureMVC
     {
         void SendNotification(int notificationName);
         void SendNotification<T>(int notificationName, T body);
-        void SendNotification<T>(int notificationName, T body, Type type);
     }
 }

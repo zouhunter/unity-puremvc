@@ -1,7 +1,7 @@
 ﻿using System;
 namespace PureMVC
 {
-    public class Facade
+    public class Facade: INotifier
     {
         protected IModel m_model;
         protected IView m_view;
