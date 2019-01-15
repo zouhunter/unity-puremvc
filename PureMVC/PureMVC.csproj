@@ -56,7 +56,7 @@
     <Compile Include="Interface\IMediator.cs" />
     <Compile Include="Interface\IModel.cs" />
     <Compile Include="Interface\INotification.cs" />
-    <Compile Include="Interface\INotifier.cs" />
+    <Compile Include="Interface\IFacade.cs" />
     <Compile Include="Interface\IObserver.cs" />
     <Compile Include="Interface\IProxy.cs" />
     <Compile Include="Interface\IView.cs" />
