@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+
 namespace PureMVC
 {
     public abstract class Mediator : IMediator

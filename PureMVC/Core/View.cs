@@ -8,7 +8,7 @@ namespace PureMVC
         protected IList<IAcceptors> m_mediatorMap;
         protected IDictionary<int, List<IObserverBase>> m_observerMap;
         protected static volatile IView m_instance;
-        internal View()
+        public View()
         {
             m_mediatorMap = new List<IAcceptors>();
             m_observerMap = new Dictionary<int, List<IObserverBase>>();

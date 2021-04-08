@@ -9,7 +9,7 @@ namespace PureMVC
         protected IDictionary<int, IAcceptor> m_proxyMap;
         protected Dictionary<int, Action<IAcceptor>> waitRegisterEvents = new Dictionary<int, Action<IAcceptor>>();
 
-        internal Model()
+        public Model()
         {
             m_proxyMap = new Dictionary<int, IAcceptor>();
         }

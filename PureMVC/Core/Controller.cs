@@ -5,12 +5,12 @@ namespace PureMVC
     public class Controller : IController
     {
         protected IView m_view;
-        protected IDictionary<int, Func<ICommandInternal>> m_commandMap;
+        protected IDictionary<int, Func<ICommandpublic>> m_commandMap;
 
-        internal Controller(IView view)
+        public Controller(IView view)
         {
             m_view = view;
-            m_commandMap = new Dictionary<int, Func<ICommandInternal>>();
+            m_commandMap = new Dictionary<int, Func<ICommandpublic>>();
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace PureMVC
         {
             if (typeof(T).BaseType.IsGenericType)
             {
-                UnityEngine.Debug.Log("请注册" + observeKey + "的参数类型" +
+                Console.WriteLine("请注册" + observeKey + "的参数类型" +
                       "\n否则不会调用带参数的方法");
             }
 
@@ -30,23 +30,23 @@ namespace PureMVC
             {
                 IObserver observer = new Observer((notification) =>
                 {
-                    Func<ICommandInternal> acceptor;
+                    Func<ICommandpublic> acceptor;
                     if (m_commandMap.TryGetValue(notification.ObserverKey, out acceptor))
                     {
                         var instence = acceptor();
                         if (instence is ICommand) (acceptor() as ICommand).Execute();
                         else
                         {
-                            UnityEngine.Debug.Log("命令" + observeKey + "参数不正确，无法执行");
+                            Console.WriteLine("命令" + observeKey + "参数不正确，无法执行");
                         }
                     }
                 }, this);
                 m_view.RegisterObserver(observeKey, observer);
-                m_commandMap[observeKey] = new Func<ICommandInternal>(() => new T());
+                m_commandMap[observeKey] = new Func<ICommandpublic>(() => new T());
             }
             else
             {
-                UnityEngine.Debug.Log("已经注册" + observeKey + "的命令" + "->不能重复注册");
+                Console.WriteLine("已经注册" + observeKey + "的命令" + "->不能重复注册");
             }
         }
         /// <summary>
@@ -61,23 +61,23 @@ namespace PureMVC
             {
                 IObserver<P> observer = new Observer<P>((notification) =>
                 {
-                    Func<ICommandInternal> acceptor;
+                    Func<ICommandpublic> acceptor;
                     if (m_commandMap.TryGetValue(notification.ObserverKey, out acceptor))
                     {
                         var instence = acceptor();
                         if (instence is ICommand<P>) (instence as ICommand<P>).Execute(notification.Body);
                         else
                         {
-                            UnityEngine.Debug.Log("命令" + observeKey + "参数不正确，无法执行");
+                            Console.WriteLine("命令" + observeKey + "参数不正确，无法执行");
                         }
                     }
                 }, this);
                 m_view.RegisterObserver(observeKey, observer);
-                m_commandMap[observeKey] = new Func<ICommandInternal>(() => new T());
+                m_commandMap[observeKey] = new Func<ICommandpublic>(() => new T());
             }
             else
             {
-                UnityEngine.Debug.Log("已经注册" + observeKey + "的命令" + "->不能重复注册");
+                Console.WriteLine("已经注册" + observeKey + "的命令" + "->不能重复注册");
             }
         }
 

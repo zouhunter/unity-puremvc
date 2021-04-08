@@ -1,15 +1,15 @@
 ﻿
 namespace PureMVC
 {
-    public interface ICommandInternal
+    public interface ICommandpublic
     {
     }
 
-    public interface ICommand : ICommandInternal
+    public interface ICommand : ICommandpublic
     {
         void Execute();
     }
-    public interface ICommand<T> : ICommandInternal
+    public interface ICommand<T> : ICommandpublic
     {
         void Execute(T data);
     }
